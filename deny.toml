@@ -33,11 +33,14 @@ deny = [
 [advisories]
 db-path = "~/.cargo/advisory-db"
 ignore = [
-    # paste is transitive through Slint's dependencies, unmaintained but no CVE
-    { id = "RUSTSEC-2024-0436", reason = "Transitive via Slint, no direct usage, review at v0.2 stable cut" },
-    # rustybuzz and ttf-parser are transitive through Slint for font rendering
-    "RUSTSEC-2026-0206",
-    "RUSTSEC-2026-0192",
+    # paste (transitive via Slint): unmaintained, no CVE, no upgrade path. ADR-0004.
+    { id = "RUSTSEC-2024-0436", reason = "Transitive via Slint; no direct usage. Review at v0.2 stable cut." },
+    # bincode (transitive via Slint → typed-index-collections): unmaintained. ADR-0004.
+    { id = "RUSTSEC-2025-0141", reason = "Transitive via Slint 1.17 (typed-index-collections → bincode). No direct usage, no fix path until upstream Slint updates. Review at v0.2 stable cut." },
+    # rustybuzz (transitive via Slint → usvg/resvg): unmaintained. ADR-0004.
+    { id = "RUSTSEC-2026-0206", reason = "Transitive via Slint font rendering pipeline (usvg → resvg). No direct usage, no fix path until upstream Slint updates. Review at v0.2 stable cut." },
+    # ttf-parser (transitive via Slint → winit → ab_glyph): unmaintained. ADR-0004.
+    { id = "RUSTSEC-2026-0192", reason = "Transitive via Slint accessibility stack (winit → ab_glyph → owned_ttf_parser). No direct usage, no fix path until upstream Slint updates. Review at v0.2 stable cut." },
 ]
 
 [sources]
