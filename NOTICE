@@ -1,0 +1,39 @@
+Heretek-Drop
+Copyright (C) 2025 Heretek-Drop contributors
+SPDX-License-Identifier: AGPL-3.0
+
+This product includes software developed by
+Drop-OSS contributors (https://github.com/Drop-OSS/drop).
+
+========================================================================
+Drop-OSS/drop — AGPL-3.0 open-source game distribution platform
+Upstream mirror at commit cc3f6455. Files referenced as prior art:
+
+  - .editorconfig, .prettierignore                    (repo conventions)
+  - sonar-project.properties, .codecov.yml           (quality gates)
+  - .github/CODEOWNERS, .github/dependabot.yml       (repo management)
+  - .github/actions/rust-ci/action.yml               (CI patterns)
+  - .github/workflows/osv-scanner.yml               (vulnerability scanning)
+  - .github/workflows/editorconfig-ci.yml            (format checking)
+  - security/risk-register.yaml                      (risk documentation)
+
+Files in apps/desktop/ referencing upstream API contracts:
+
+  - crates/protocol/src/types.rs                     (Drop API shapes)
+  - crates/protocol/src/endpoints.rs                 (REST endpoint paths)
+  - crates/protocol/src/client.rs                    (auth flow patterns)
+
+========================================================================
+BillyOutlast/drop/pull/200 — test + CI + static-analysis infrastructure
+Merged at BillyOutlast/drop@fcefefb7. Patterns ported to lefthook:
+
+  - .husky/pre-commit: ported from .husky/pre-commit
+  - .husky/commit-msg: ported from .husky/commit-msg
+
+========================================================================
+This binary statically links the following AGPL-3.0 code:
+
+  - NONE (v0.1 does not vendor upstream Rust crates)
+
+If future versions link upstream crates (droplet, libarchive,
+native_model), this notice must be updated.

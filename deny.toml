@@ -1,0 +1,37 @@
+[graph]
+exclude-dev = true
+
+[licenses]
+allow = [
+    "AGPL-3.0",
+    "MIT",
+    "Apache-2.0",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "BSL-1.0",
+    "ISC",
+    "Zlib",
+    "Unicode-3.0",
+    "Unlicense",
+    "CC0-1.0",
+    "CDLA-Permissive-2.0",
+    "GPL-3.0-only",
+    "MPL-2.0",
+    "NCSA",
+    "LicenseRef-Slint-Royalty-free-2.0",
+]
+confidence-threshold = 0.8
+
+[advisories]
+db-path = "~/.cargo/advisory-db"
+ignore = [
+    # paste is transitive through Slint's dependencies, unmaintained but no CVE
+    "RUSTSEC-2024-0436",
+    # rustybuzz and ttf-parser are transitive through Slint for font rendering
+    "RUSTSEC-2026-0206",
+    "RUSTSEC-2026-0192",
+]
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
