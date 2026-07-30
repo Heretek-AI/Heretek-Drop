@@ -87,7 +87,54 @@ jobs:
       - uses: dtolnay/rust-toolchain@4fd1da8b0805d2d2e936788875a7d65dbd677dc2
         with:
           toolchain: stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "apps/desktop -> target"
+          key: ${{ hashFiles('Cargo.lock') }}
+          shared-key: "heretek-drop"
       - name: Install cargo-deny
         run: cargo install cargo-deny --locked
       - name: Run cargo-deny
         run: cargo deny check
+
+  # ── Rust formatting ──────────────────────────────────────────────
+  cargo-fmt:
+    name: cargo fmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "apps/desktop -> target"
+          key: ${{ hashFiles('Cargo.lock') }}
+          shared-key: "heretek-drop"
+      - run: cargo fmt --all -- --check
+
+  # ── Doc integrity (catches broken intra-doc links) ──────────────
+  cargo-doc:
+    name: cargo doc
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rust-docs
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "apps/desktop -> target"
+          key: ${{ hashFiles('Cargo.lock') }}
+          shared-key: "heretek-drop"
+      - run: RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --workspace
+
+  # ── Dependency vulnerability scan ────────────────────────────────
+  cargo-audit:
+    name: cargo audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo install cargo-audit --locked
+      - run: cargo audit
