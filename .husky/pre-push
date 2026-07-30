@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 # Heretek-Drop pre-push hook
-# Runs full test suite before push.
+# Runs fmt check, then test (with single-crate fast path).
 # Installed by Husky 9 — do not run manually.
 
 set -e
@@ -9,10 +9,83 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
 
-printf "${YELLOW}==>${NC} cargo test --workspace\n"
-if cargo test --workspace --verbose; then
-    printf "${GREEN}✓${NC} tests passed\n"
+# --- Step 1: cargo fmt -- check (cheap, catches fmt drift) ---
+printf "${YELLOW}==>${NC} cargo fmt --all -- --check\n"
+if cargo fmt --all -- --check; then
+    printf "${GREEN}✓${NC} format check passed\n"
 else
-    printf "${RED}✗${NC} tests failed\n" >&2
+    printf "${RED}✗${NC} format check failed\n" >&2
     exit 1
+fi
+
+# --- Step 2: Detect changed crates for fast test path ---
+detect_changed_crates() {
+    local changed_files
+    changed_files=$(git diff --name-only origin/main...HEAD 2>/dev/null) || return 1
+
+    if [ -z "$changed_files" ]; then
+        return 1
+    fi
+
+    local crates=""
+    for file in $changed_files; do
+        case "$file" in
+            apps/desktop/crates/auth/*)             crates="$crates -p heretek-drop-auth" ;;
+            apps/desktop/crates/database/*)          crates="$crates -p heretek-drop-database" ;;
+            apps/desktop/crates/protocol/*)          crates="$crates -p heretek-drop-protocol" ;;
+            apps/desktop/crates/download_manager/*)  crates="$crates -p heretek-drop-download-manager" ;;
+            apps/desktop/crates/process_manager/*)   crates="$crates -p heretek-drop-process-manager" ;;
+            apps/desktop/crates/shared/*)            crates="$crates -p heretek-drop-shared" ;;
+            apps/desktop/src/*)                      crates="$crates -p heretek-drop" ;;
+            Cargo.toml | apps/desktop/Cargo.toml)    return 1 ;;  # root config → full workspace
+        esac
+    done
+
+    # Deduplicate and output
+    echo "$crates" | tr ' ' '\n' | sort -u | tr '\n' ' '
+    return 0
+}
+
+changed_crates=$(detect_changed_crates) || {
+    # Fallback: full workspace test (root config changed, or no origin/main)
+    printf "${YELLOW}==>${NC} cargo test --workspace (fast-path skipped)\n"
+    if cargo test --workspace --verbose; then
+        printf "${GREEN}✓${NC} tests passed\n"
+    else
+        printf "${RED}✗${NC} tests failed\n" >&2
+        exit 1
+    fi
+    exit 0
+}
+
+# Parse crate count
+set -- $changed_crates
+crate_count=$#
+
+if [ "$crate_count" -eq 1 ]; then
+    # Single crate fast path: test affected crate first
+    single_crate="$1"
+    printf "${YELLOW}==>${NC} cargo test %s (single-crate fast path)\n" "$single_crate"
+    if ! cargo test "$single_crate"; then
+        printf "${RED}✗${NC} %s tests failed — aborting push\n" "$single_crate" >&2
+        exit 1
+    fi
+    printf "${GREEN}✓${NC} %s passed\n" "$single_crate"
+    # Then run full test suite
+    printf "${YELLOW}==>${NC} cargo test --workspace --verbose (full suite)\n"
+    if cargo test --workspace --verbose; then
+        printf "${GREEN}✓${NC} tests passed\n"
+    else
+        printf "${RED}✗${NC} tests failed\n" >&2
+        exit 1
+    fi
+else
+    # 0 or 2+ crates: skip fast-path, run full test
+    printf "${YELLOW}==>${NC} cargo test --workspace (fast-path: %d crates affected)\n" "$crate_count"
+    if cargo test --workspace --verbose; then
+        printf "${GREEN}✓${NC} tests passed\n"
+    else
+        printf "${RED}✗${NC} tests failed\n" >&2
+        exit 1
+    fi
 fi

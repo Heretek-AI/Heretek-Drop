@@ -1,6 +1,9 @@
 #!/usr/bin/env sh
+# Copyright (C) 2025 Heretek-Drop contributors
+# SPDX-License-Identifier: AGPL-3.0
+#
 # Heretek-Drop pre-commit hook
-# Runs: cargo fmt, cargo clippy, fallow, prettier
+# Runs: cargo fmt, cargo clippy, fallow, doc-check, prettier
 # Installed by Husky 9 — do not run manually.
 
 set -e
@@ -15,24 +18,45 @@ step() { printf "${YELLOW}==>${NC} %s\n" "$1"; }
 ok()   { printf "${GREEN}✓${NC} %s\n" "$1"; }
 fail() { printf "${RED}✗${NC} %s\n" "$1" >&2; exit 1; }
 
-# Stash unstaged unstaged changes for fallow (it walks the working tree).
-# We only run fallow on the staged version of the tree.
-# Cheap trick: use git stash for files fallow cares about.
+# Source dynamic hook modules
+. "$(dirname "$0")/pre-commit.d/crate-detect.sh"
+. "$(dirname "$0")/pre-commit.d/doc-check.sh"
+
+# Determine which crates changed — empty CRATES means full workspace
+CRATES=$(detect_changed_crates) || true
 
 # ── 1. cargo fmt ───────────────────────────────────────────────────────────
-step "cargo fmt --all -- --check"
-if cargo fmt --all -- --check; then
-    ok "rust formatting clean"
+if [ -z "$CRATES" ]; then
+    step "cargo fmt --all -- --check"
+    if cargo fmt --all -- --check; then
+        ok "rust formatting clean"
+    else
+        fail "rust formatting drift. Run: cargo fmt --all"
+    fi
 else
-    fail "rust formatting drift. Run: cargo fmt --all"
+    step "cargo fmt $CRATES -- --check"
+    if cargo fmt $CRATES -- --check; then
+        ok "rust formatting clean"
+    else
+        fail "rust formatting drift. Run: cargo fmt $CRATES"
+    fi
 fi
 
 # ── 2. cargo clippy ────────────────────────────────────────────────────────
-step "cargo clippy --workspace --all-targets -- -D warnings"
-if cargo clippy --workspace --all-targets -- -D warnings; then
-    ok "clippy clean"
+if [ -z "$CRATES" ]; then
+    step "cargo clippy --workspace --all-targets -- -D warnings"
+    if cargo clippy --workspace --all-targets -- -D warnings; then
+        ok "clippy clean"
+    else
+        fail "clippy errors. Run: cargo clippy --workspace --all-targets"
+    fi
 else
-    fail "clippy errors. Fix: cargo clippy --workspace --all-targets"
+    step "cargo clippy $CRATES --all-targets -- -D warnings"
+    if cargo clippy $CRATES --all-targets -- -D warnings; then
+        ok "clippy clean"
+    else
+        fail "clippy errors. Fix the above."
+    fi
 fi
 
 # ── 3. fallow ─────────────────────────────────────────────────────────────
@@ -45,7 +69,13 @@ else
     fail "fallow reported issues. Check: pnpm exec fallow"
 fi
 
-# ── 4. prettier ───────────────────────────────────────────────────────────
+# ── 4. doc-check ──────────────────────────────────────────────────────────
+# Warns when new public API items lack doc comments (non-blocking).
+step "doc-check (public API documentation)"
+check_doc_comments
+ok "doc-check complete"
+
+# ── 5. prettier ──────────────────────────────────────────────────────────
 # Prettier formats Markdown, YAML, and JSON. We exclude .slint (Slint has
 # its own formatter), generated files, vendored upstream, and build output.
 step "prettier --check on staged files"
