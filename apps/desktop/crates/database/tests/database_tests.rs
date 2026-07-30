@@ -3,10 +3,9 @@
 
 //! Unit tests for the database crate.
 
-use std::path::PathBuf;
 use tempfile::TempDir;
 
-use heretek_drop_database::{Database, DbError};
+use heretek_drop_database::Database;
 
 /// In-memory database round-trip.
 #[tokio::test]

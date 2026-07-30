@@ -118,7 +118,7 @@ async fn database_in_memory_all_types() {
     let db = Database::open_memory().unwrap();
     db.write("str", &"hello".to_string()).await.unwrap();
     db.write("int", &42_i32).await.unwrap();
-    db.write("float", &3.14_f64).await.unwrap();
+    db.write("float", &std::f64::consts::PI).await.unwrap();
     db.write("bool", &true).await.unwrap();
 
     assert_eq!(
@@ -126,7 +126,10 @@ async fn database_in_memory_all_types() {
         Some("hello".into())
     );
     assert_eq!(db.read::<i32>("int").await.unwrap(), Some(42));
-    assert_eq!(db.read::<f64>("float").await.unwrap(), Some(3.14));
+    assert_eq!(
+        db.read::<f64>("float").await.unwrap(),
+        Some(std::f64::consts::PI)
+    );
     assert_eq!(db.read::<bool>("bool").await.unwrap(), Some(true));
 }
 

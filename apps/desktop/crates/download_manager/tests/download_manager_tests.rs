@@ -65,7 +65,6 @@ fn download_state_debug_clone() {
         DownloadState::Cancelled,
     ];
     for s in &states {
-        let _cloned = s.clone();
         let _debug = format!("{s:?}");
     }
 }

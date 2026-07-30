@@ -3,7 +3,6 @@
 
 //! Unit tests for the auth crate.
 
-use std::path::PathBuf;
 use tempfile::TempDir;
 
 use heretek_drop_auth::{Credentials, CredentialsStorage};

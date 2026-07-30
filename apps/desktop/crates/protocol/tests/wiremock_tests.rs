@@ -3,7 +3,7 @@
 
 //! Wiremock-based HTTP tests for the Drop protocol client.
 
-use heretek_drop_protocol::{AuthContext, Client};
+use heretek_drop_protocol::Client;
 use wiremock::matchers::{method, path};
 use wiremock::{Mock, MockServer, ResponseTemplate};
 
