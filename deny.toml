@@ -22,11 +22,19 @@ allow = [
 ]
 confidence-threshold = 0.8
 
+[bans]
+deny = [
+    # Prevent accidental openssl usage (use rustls)
+    { name = "openssl" },
+    { name = "openssl-sys" },
+    { name = "openssl-probe" },
+]
+
 [advisories]
 db-path = "~/.cargo/advisory-db"
 ignore = [
     # paste is transitive through Slint's dependencies, unmaintained but no CVE
-    "RUSTSEC-2024-0436",
+    { id = "RUSTSEC-2024-0436", reason = "Transitive via Slint, no direct usage, review at v0.2 stable cut" },
     # rustybuzz and ttf-parser are transitive through Slint for font rendering
     "RUSTSEC-2026-0206",
     "RUSTSEC-2026-0192",
