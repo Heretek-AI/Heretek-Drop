@@ -23,11 +23,11 @@ jobs:
       security-events: write
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - uses: github/codeql-action/init@4dd16135b69a43b6c8efb853346f8437d92d3c93 # v4
+      - uses: github/codeql-action/init@bce182f857edf1feab116e9795a3393d21977282 # v4
         with:
           languages: rust
           build-mode: none
-      - uses: github/codeql-action/analyze@4dd16135b69a43b6c8efb853346f8437d92d3c93 # v4
+      - uses: github/codeql-action/analyze@bce182f857edf1feab116e9795a3393d21977282 # v4
         with:
           category: "/language:rust"
 
@@ -40,10 +40,10 @@ jobs:
       security-events: write
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - uses: github/codeql-action/init@4dd16135b69a43b6c8efb853346f8437d92d3c93 # v4
+      - uses: github/codeql-action/init@bce182f857edf1feab116e9795a3393d21977282 # v4
         with:
-          languages: actions
+          languages: github-actions
           build-mode: none
-      - uses: github/codeql-action/analyze@4dd16135b69a43b6c8efb853346f8437d92d3c93 # v4
+      - uses: github/codeql-action/analyze@bce182f857edf1feab116e9795a3393d21977282 # v4
         with:
-          category: "/language:actions"
+          category: "/language:github-actions"

@@ -41,11 +41,11 @@ jobs:
           sudo apt-get install -y flatpak flatpak-builder
 
       - name: Add flathub remote
-        run: flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+        run: flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
       - name: Install SDK + runtime
         run: |
-          flatpak install -y flathub \
+          flatpak install --user -y flathub \
             org.freedesktop.Platform//24.08 \
             org.freedesktop.Sdk//24.08 \
             org.freedesktop.Sdk.Extension.rust-stable//24.08

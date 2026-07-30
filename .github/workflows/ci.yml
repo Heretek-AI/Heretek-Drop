@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - uses: docker://rhysd/actionlint:1.7.7
+      - uses: docker://rhysd/actionlint:1.7.12
         with:
           args: -color
 
@@ -36,7 +36,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
-      - uses: gitleaks/gitleaks-action@9f164fd42599d7c8435f8b8d4e150da86f7e4b7d # v2
+      - uses: gitleaks/gitleaks-action@bcfb9cce635345aac9996cedc19b2de8e01b894f # v3.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -85,6 +85,6 @@ jobs:
         with:
           toolchain: stable
       - name: Install cargo-deny
-        uses: taiki-e/install-action@0e5f08c8888a52d1d7a85b8ca6c8b9b5f4b9f7d3 # cargo-deny
+        uses: taiki-e/install-action@065d6a08a14e61e89fb0a4c10eecdbdef39c7d8e # cargo-deny v2.85.4
       - name: Run cargo-deny
         run: cargo deny check
