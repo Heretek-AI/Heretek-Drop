@@ -102,6 +102,7 @@ impl Config {
     }
 
     /// Default config — points at the official Drop instance.
+    #[must_use]
     pub fn default_config() -> Self {
         Self {
             server: ServerConfig {

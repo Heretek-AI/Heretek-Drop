@@ -20,6 +20,7 @@ pub struct DownloadService {
 
 impl DownloadService {
     /// Create a new download service.
+    #[must_use]
     pub fn new(manager: DownloadManager, bus: EventBus) -> Self {
         Self {
             manager,
@@ -64,6 +65,7 @@ impl DownloadService {
     }
 
     /// Get the default downloads directory.
+    #[must_use]
     pub fn downloads_dir(&self) -> PathBuf {
         self.manager.downloads_dir().clone()
     }

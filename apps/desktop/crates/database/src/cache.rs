@@ -24,6 +24,7 @@ pub struct Cache {
 
 impl Cache {
     /// Construct a cache backed by the given database.
+    #[must_use]
     pub fn new(db: crate::Database) -> Self {
         Self { db }
     }

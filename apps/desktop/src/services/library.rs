@@ -29,6 +29,7 @@ pub struct LibraryService {
 
 impl LibraryService {
     /// Create a new library service.
+    #[must_use]
     pub fn new(state: AppState, bus: EventBus) -> Self {
         Self {
             state,

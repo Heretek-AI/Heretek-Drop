@@ -26,7 +26,7 @@ async fn health_returns_app_name() {
     assert_eq!(res.version.unwrap(), "0.1.0");
 }
 
-/// Test auth_initiate returns a redirect URL.
+/// Test `auth_initiate` returns a redirect URL.
 #[tokio::test]
 async fn auth_initiate_ok() {
     let mock_server = MockServer::start().await;
@@ -46,7 +46,7 @@ async fn auth_initiate_ok() {
     assert!(res.redirect_url.contains("drop.test"));
 }
 
-/// Test auth_handshake returns credentials.
+/// Test `auth_handshake` returns credentials.
 #[tokio::test]
 async fn auth_handshake_ok() {
     let mock_server = MockServer::start().await;
@@ -69,7 +69,7 @@ async fn auth_handshake_ok() {
     assert!(res.private.contains("cHJpdmF0"));
 }
 
-/// Test server error returns ProtocolError::Server.
+/// Test server error returns `ProtocolError::Server`.
 #[tokio::test]
 async fn server_error_returns_protocol_error() {
     let mock_server = MockServer::start().await;
@@ -89,7 +89,7 @@ async fn server_error_returns_protocol_error() {
     }
 }
 
-/// Test 401 error returns ProtocolError::Server.
+/// Test 401 error returns `ProtocolError::Server`.
 #[tokio::test]
 async fn unauthorized_returns_protocol_error() {
     let mock_server = MockServer::start().await;
@@ -113,7 +113,7 @@ async fn unauthorized_returns_protocol_error() {
     }
 }
 
-/// Test auth_code_request and auth_code_poll URL building.
+/// Test `auth_code_request` and `auth_code_poll` URL building.
 #[test]
 fn endpoint_url_matches_expected() {
     let eps = heretek_drop_protocol::Endpoints::new("https://drop.test").unwrap();

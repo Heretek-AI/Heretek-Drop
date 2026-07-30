@@ -53,6 +53,7 @@ pub struct AuthState {
 
 impl AuthFlow {
     /// Construct a new auth flow on the given protocol client.
+    #[must_use]
     pub fn new(client: Client) -> Self {
         Self {
             client,
@@ -61,6 +62,7 @@ impl AuthFlow {
     }
 
     /// Get current auth state.
+    #[must_use]
     pub fn state(&self) -> &AuthState {
         &self.state
     }
@@ -100,6 +102,7 @@ impl AuthFlow {
 
     /// Open the redirect URL in the system browser.
     /// Returns the URL so the caller can spawn a UI-side action.
+    #[must_use]
     pub fn browser_url_for_initiation(&self) -> Option<&str> {
         // Caller invokes `rfd`-style or `open` crate separately.
         None

@@ -20,6 +20,7 @@ impl Endpoints {
     }
 
     /// `GET /api/v1/`
+    #[must_use]
     pub fn health(&self) -> Url {
         let mut u = self.base.clone();
         u.set_path("/api/v1/");
@@ -27,6 +28,7 @@ impl Endpoints {
     }
 
     /// `POST /api/v1/client/auth/initiate`
+    #[must_use]
     pub fn auth_initiate(&self) -> Url {
         let mut u = self.base.clone();
         u.set_path("/api/v1/client/auth/initiate");
@@ -34,6 +36,7 @@ impl Endpoints {
     }
 
     /// `POST /api/v1/client/auth/handshake`
+    #[must_use]
     pub fn auth_handshake(&self) -> Url {
         let mut u = self.base.clone();
         u.set_path("/api/v1/client/auth/handshake");
@@ -41,6 +44,7 @@ impl Endpoints {
     }
 
     /// `POST /api/v1/client/auth/code`
+    #[must_use]
     pub fn auth_code_request(&self) -> Url {
         let mut u = self.base.clone();
         u.set_path("/api/v1/client/auth/code");
@@ -48,6 +52,7 @@ impl Endpoints {
     }
 
     /// `GET /api/v1/client/auth/code/{code}`
+    #[must_use]
     pub fn auth_code_poll(&self, code: &str) -> Url {
         let mut u = self.base.clone();
         u.set_path(&format!("/api/v1/client/auth/code/{code}"));
@@ -55,6 +60,7 @@ impl Endpoints {
     }
 
     /// `GET /api/v1/client/user`
+    #[must_use]
     pub fn user(&self) -> Url {
         let mut u = self.base.clone();
         u.set_path("/api/v1/client/user");
@@ -62,6 +68,7 @@ impl Endpoints {
     }
 
     /// `GET /api/v1/client/user/library`
+    #[must_use]
     pub fn user_library(&self) -> Url {
         let mut u = self.base.clone();
         u.set_path("/api/v1/client/user/library");
@@ -69,6 +76,7 @@ impl Endpoints {
     }
 
     /// `GET /api/v1/client/game/{id}`
+    #[must_use]
     pub fn game(&self, id: u32) -> Url {
         let mut u = self.base.clone();
         u.set_path(&format!("/api/v1/client/game/{id}"));
@@ -76,6 +84,7 @@ impl Endpoints {
     }
 
     /// `GET /api/v1/client/game/{id}/versions`
+    #[must_use]
     pub fn game_versions(&self, id: u32) -> Url {
         let mut u = self.base.clone();
         u.set_path(&format!("/api/v1/client/game/{id}/versions"));

@@ -22,6 +22,7 @@ pub struct AuthService {
 
 impl AuthService {
     /// Create a new auth service.
+    #[must_use]
     pub fn new(state: AppState, bus: EventBus) -> Self {
         Self {
             state,

@@ -45,6 +45,7 @@ pub struct SettingsService {
 
 impl SettingsService {
     /// Create a new settings service.
+    #[must_use]
     pub fn new(state: AppState, bus: EventBus) -> Self {
         Self { state, bus }
     }

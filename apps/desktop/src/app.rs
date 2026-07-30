@@ -31,7 +31,8 @@ impl App {
 
         let downloads_dir = default_downloads_dir();
         let download_manager = DownloadManager::new(2, downloads_dir);
-        download_manager.progress_receiver(); // ensure channel is allocated
+        // Drop the receiver — DownloadService holds its own copy via start_pump.
+        let _ = download_manager.progress_receiver();
 
         let auth = AuthService::new(state.clone(), bus.clone());
         let library = LibraryService::new(state.clone(), bus.clone());

@@ -26,6 +26,7 @@ pub struct Commands {
 
 impl Commands {
     /// Create a new commands handle.
+    #[must_use]
     pub fn new(
         state: AppState,
         auth: AuthService,
@@ -71,12 +72,11 @@ impl Commands {
         game_id: i32,
     ) -> Result<(), AppError> {
         info!(game_id, "download_game callback");
-        let game_id_u32 = match u32::try_from(game_id) {
-            Ok(v) => v,
-            Err(_) => {
-                error!("download_game: invalid game id {game_id}");
-                return Ok(());
-            }
+        let game_id_u32 = if let Ok(v) = u32::try_from(game_id) {
+            v
+        } else {
+            error!("download_game: invalid game id {game_id}");
+            return Ok(());
         };
 
         // Resolve to a VersionDownloadOption.

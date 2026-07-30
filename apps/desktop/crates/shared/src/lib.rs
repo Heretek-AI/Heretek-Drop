@@ -38,6 +38,7 @@ pub enum Error {
 
 impl Error {
     /// Returns `true` if the error indicates a transient server-side failure.
+    #[must_use]
     pub fn is_retryable(&self) -> bool {
         match self {
             Error::Network(_) => true,
@@ -93,6 +94,7 @@ impl ServerUrl {
     }
 
     /// Get the URL as a string slice.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         self.0.as_str()
     }

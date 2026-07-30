@@ -73,6 +73,7 @@ struct ManagerInner {
 
 impl DownloadManager {
     /// Create a new download manager.
+    #[must_use]
     pub fn new(max_concurrent: u32, downloads_dir: PathBuf) -> Self {
         let (progress_tx, progress_rx) = flume::bounded(128);
         Self {
@@ -87,6 +88,7 @@ impl DownloadManager {
     }
 
     /// Get a receiver for progress events.
+    #[must_use]
     pub fn progress_receiver(&self) -> flume::Receiver<DownloadProgress> {
         self.inner.progress_rx.clone()
     }
@@ -136,11 +138,13 @@ impl DownloadManager {
     }
 
     /// Get configured max concurrent downloads.
+    #[must_use]
     pub fn max_concurrent(&self) -> u32 {
         self.inner.max_concurrent
     }
 
     /// Get the default downloads directory.
+    #[must_use]
     pub fn downloads_dir(&self) -> &PathBuf {
         &self.inner.downloads_dir
     }
@@ -277,6 +281,7 @@ impl Default for DownloadManager {
 }
 
 /// Default download directory: `~/Games/Heretek-Drop`.
+#[must_use]
 pub fn default_downloads_dir() -> PathBuf {
     directories::UserDirs::new()
         .map(|u| u.home_dir().join("Games").join("Heretek-Drop"))

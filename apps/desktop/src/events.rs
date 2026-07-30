@@ -81,6 +81,7 @@ pub enum Event {
 
 impl Event {
     /// Get the type name as a string (for log filtering).
+    #[must_use]
     pub fn type_name(&self) -> &'static str {
         match self {
             Event::AuthChanged { .. } => "auth_changed",
@@ -109,6 +110,7 @@ struct Inner {
 
 impl EventBus {
     /// Create a new event bus with a bounded channel.
+    #[must_use]
     pub fn new(capacity: usize) -> Self {
         let (tx, rx) = flume::bounded(capacity);
         Self {
@@ -117,11 +119,13 @@ impl EventBus {
     }
 
     /// Get a sender (cheap to clone).
+    #[must_use]
     pub fn sender(&self) -> Sender<Event> {
         self.inner.tx.clone()
     }
 
     /// Get a receiver (one per consumer).
+    #[must_use]
     pub fn receiver(&self) -> Receiver<Event> {
         self.inner.rx.clone()
     }

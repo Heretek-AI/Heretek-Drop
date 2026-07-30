@@ -25,6 +25,7 @@ struct ManagerInner {
 
 impl ProcessManager {
     /// Create a new process manager.
+    #[must_use]
     pub fn new() -> Self {
         Self {
             inner: Arc::new(ManagerInner {

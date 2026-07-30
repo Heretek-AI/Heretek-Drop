@@ -40,6 +40,7 @@ pub struct DownloadProgress {
 
 impl DownloadProgress {
     /// Compute progress as a fraction in `[0.0, 1.0]`.
+    #[must_use]
     pub fn fraction(&self) -> f32 {
         match self.total_bytes {
             Some(total) if total > 0 => {

@@ -31,11 +31,13 @@ pub struct Client {
 
 impl Client {
     /// Build a new client with the default timeout.
+    #[must_use]
     pub fn new(base_url: &str) -> Self {
         Self::builder(base_url).build()
     }
 
     /// Construct a new client builder.
+    #[must_use]
     pub fn builder(base_url: &str) -> ClientBuilder {
         ClientBuilder::new(base_url)
     }

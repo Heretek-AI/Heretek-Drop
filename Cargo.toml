@@ -11,6 +11,19 @@ clippy.all = { level = "warn", priority = -1 }
 clippy.correctness = { level = "deny" }
 clippy.perf = { level = "deny" }
 clippy.style = { level = "warn", priority = -1 }
+# AI_HARNESS_PLAN.md §5.2 — additional clippy lints, warn-level (non-breaking).
+clippy.missing_panics_doc = { level = "warn", priority = -1 }
+clippy.must_use_candidate = { level = "warn", priority = -1 }
+clippy.doc_markdown = { level = "warn", priority = -1 }
+clippy.cast_lossless = { level = "warn", priority = -1 }
+clippy.redundant_closure = { level = "warn", priority = -1 }
+clippy.single_match_else = { level = "warn", priority = -1 }
+# Deny-level additions require per-crate overrides for test code;
+# tracked separately so CI does not break during initial rollout.
+# clippy.unwrap_used = "deny"          # planned: phase B follow-up
+# clippy.expect_used = "deny"          # planned: phase B follow-up
+# clippy.panicking_unwrap = "deny"     # planned: phase B follow-up
+# clippy.wildcard_imports = "deny"     # planned: phase B follow-up
 rustdoc.missing_docs = "warn"
 rust.unused_must_use = "deny"
 rust.unsafe_code = "deny"

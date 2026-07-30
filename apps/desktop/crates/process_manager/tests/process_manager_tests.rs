@@ -8,7 +8,7 @@ use std::path::PathBuf;
 
 use heretek_drop_process_manager::{LaunchSpec, ProcessManager};
 
-/// LaunchSpec debug formatting.
+/// `LaunchSpec` debug formatting.
 #[test]
 fn launch_spec_debug() {
     let spec = LaunchSpec {
@@ -22,7 +22,7 @@ fn launch_spec_debug() {
     let _debug = format!("{spec:?}");
 }
 
-/// ProcessManager is Clone and Default.
+/// `ProcessManager` is Clone and Default.
 #[test]
 fn process_manager_clone_default() {
     let pm1 = ProcessManager::default();
@@ -45,7 +45,7 @@ async fn get_non_existent_returns_none() {
     assert!(proc.is_none());
 }
 
-/// LaunchSpec serialization round-trip.
+/// `LaunchSpec` serialization round-trip.
 #[test]
 fn launch_spec_serde_roundtrip() {
     let spec = LaunchSpec {
