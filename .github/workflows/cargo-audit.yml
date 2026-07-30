@@ -1,0 +1,31 @@
+name: Cargo Audit
+
+# Weekly schedule catches newly-disclosed advisories without spamming PRs.
+# Also triggers on every Cargo.lock change so a new transitive dep is
+# audited immediately on the commit that introduces it.
+on:
+  schedule:
+    - cron: "42 6 * * 1" # Monday 06:42 UTC
+  push:
+    paths: ["**/Cargo.lock"]
+  workflow_dispatch:
+
+# Cancel outdated in-progress runs of the same workflow on the same ref.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: cargo audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install cargo-audit
+        run: cargo install cargo-audit --locked
+      - name: Run cargo audit
+        run: cargo audit
