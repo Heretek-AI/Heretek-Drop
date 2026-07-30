@@ -1,7 +1,8 @@
 version: 2
 
-# Tauri 2 + Solid.js project. Single Cargo workspace in apps/desktop/src-tauri/
-# and single pnpm workspace at root (apps/* + packages/*).
+# Native Rust + Slint project. Cargo workspace at apps/desktop/ with
+# sub-crates at apps/desktop/crates/*. Flatpak manifest at
+# apps/desktop/flatpak/. pnpm workspace at root for tooling only.
 
 updates:
   # ----- pnpm workspace (root, covers apps/* + packages/*) -----
@@ -24,9 +25,9 @@ updates:
     labels: ["dependencies", "javascript"]
     rebase-strategy: "auto"
 
-  # ----- Rust workspace (Tauri 2 core) -----
+  # ----- Rust workspace (heretek-drop) -----
   - package-ecosystem: "cargo"
-    directory: "/apps/desktop/src-tauri"
+    directory: "/apps/desktop"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -39,12 +40,12 @@ updates:
       rust-major:
         update-types: ["major"]
     commit-message:
-      prefix: "deps(desktop)"
+      prefix: "deps(rust)"
     labels: ["dependencies", "rust"]
 
-  # ----- Flatpak manifests -----
+  # ----- Flatpak manifest -----
   - package-ecosystem: "docker"
-    directory: "/flatpak"
+    directory: "/apps/desktop/flatpak"
     schedule:
       interval: "weekly"
       day: "monday"
