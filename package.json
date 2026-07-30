@@ -34,7 +34,8 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "fallow",
-      "@commitlint/cli"
+      "@commitlint/cli",
+      "husky"
     ]
   }
 }
