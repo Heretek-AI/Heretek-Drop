@@ -31,7 +31,7 @@ tokio-util = { version = "0.7", features = ["io"] }
 
 # HTTP + JWT
 reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls", "gzip"] }
-jsonwebtoken = "9.3"
+jsonwebtoken = "10.3"
 
 # Serialization
 serde = { version = "1.0", features = ["derive"] }
