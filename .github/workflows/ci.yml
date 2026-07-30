@@ -40,7 +40,7 @@ jobs:
       - name: Run betterleaks
         uses: docker://ghcr.io/betterleaks/betterleaks:latest
         with:
-          args: "git . --verbose --git-workers=4"
+          args: "dir . --verbose"
 
   # ── Dependency review ─────────────────────────────────────────────
   dependency-review:
