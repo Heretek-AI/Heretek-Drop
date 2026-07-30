@@ -30,4 +30,4 @@ jobs:
       - name: Validate .editorconfig compliance
         run: |
           pnpm dlx editorconfig-checker@6.1.1 --exclude \
-            '(node_modules|\.git|\.nuxt|\.output|coverage|dist|target|\.omo|\.codegraph|\.opencode|\.dockerignore|README\.md|LICENSE|AGPL-3\.0\.LICENSE|upstream|\.agents|\.husky|\.flatpak-builder|pnpm-lock\.yaml|Cargo\.lock)'
+            '(node_modules|\.git|\.nuxt|\.output|coverage|dist|target|\.omo|\.codegraph|\.opencode|\.dockerignore|README\.md|LICENSE|AGPL-3\.0\.LICENSE|upstream|\.agents|\.husky|\.flatpak-builder|pnpm-lock\.yaml|Cargo\.lock|package\.json)'
