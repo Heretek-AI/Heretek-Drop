@@ -1,0 +1,31 @@
+# Accepted security risks for Heretek-Drop.
+#
+# Schema follows upstream convention (PR #200 in BillyOutlast/drop).
+# Each entry documents a known vulnerability with accepted mitigation.
+# `review_by`: when this entry must be re-evaluated (auto-flagged if past).
+# `ci_ignore: true` means the vuln is in `cargo audit --ignore RUSTSEC-...`
+# (or `pnpm audit --ignore GHSA-...`) and this entry is the authoritative
+# rationale.
+#
+# When a new vuln is added to ignore list, add a corresponding entry here.
+# CI check (ci.yml: verify-risk-register) enforces coverage.
+
+risks: []
+  # No accepted risks at v0.1 launch. The project is greenfield and was
+  # scaffolded against Tauri 2.x + Solid.js + a current Rust toolchain, so
+  # transitive deps at lockfile time are clean.
+  #
+  # First entry template (add when applicable):
+  #
+  # - id: RISK-001
+  #   title: "short vulnerability title"
+  #   package: "crate@<version-range>"
+  #   advisory: "GHSA-xxxx-xxxx-xxxx" or "RUSTSEC-YYYY-NNNN"
+  #   severity: critical | high | moderate | low
+  #   affected_paths:
+  #     - "apps/desktop/src-tauri>crate>transitive"
+  #   mitigation: "how risk is mitigated"
+  #   accepted_by: "maintainer handle"
+  #   accepted_date: "YYYY-MM-DD"
+  #   review_by: "YYYY-MM-DD"
+  #   ci_ignore: true

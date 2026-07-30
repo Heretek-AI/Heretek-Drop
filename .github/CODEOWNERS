@@ -1,0 +1,26 @@
+# CODEOWNERS — Heretek-Drop
+# Replace @heretek-maintainers with your team handle after first PR merge.
+# Until then, GitHub will fall back to the PR author for review routing.
+
+# Default: PR author handles review
+* @heretek-maintainers
+
+# Security-sensitive: auth, JWT, drop-protocol client
+/apps/desktop/src-tauri/crates/protocol/ @heretek-maintainers
+/apps/desktop/src-tauri/crates/auth/ @heretek-maintainers
+
+# Build, deps, CI
+/.github/workflows/ @heretek-maintainers
+/lefthook.yml @heretek-maintainers
+/Cargo.toml @heretek-maintainers
+/AGENTS.md @heretek-maintainers
+/CLAUDE.md @heretek-maintainers
+/CONTRIBUTING.md @heretek-maintainers
+
+# Flatpak packaging
+/flatpak/ @heretek-maintainers
+
+# License + AGPL compliance
+/LICENSE @heretek-maintainers
+/AGPL-3.0.LICENSE @heretek-maintainers
+/security/ @heretek-maintainers

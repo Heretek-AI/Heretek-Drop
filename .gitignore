@@ -1,0 +1,83 @@
+# Rust / Cargo
+target/
+**/target/
+**/Cargo.lock.bak
+*.rs.bk
+
+# Cargo registry cache
+.cargo/
+
+# Slint build artifacts
+**/slint_build/
+**/build/
+
+# flatpak-builder
+.builddir/
+.flatpak-builder/
+.flatpak/
+.flatpak-builder-caches/
+.flatpak_repos/
+
+# IDE / editor
+.idea/
+.vscode/
+*.swp
+*.swo
+.fleet/
+.cursor/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Toolchain caches
+.omo/
+.omo/**
+.codegraph/
+.codegraph/**
+
+# Test artifacts
+**/test-results/
+**/playwright-report/
+**/coverage/
+**/lcov.info
+
+# Node (kept minimal — only used for prettier in some setup flows)
+node_modules/
+.pnpm-store/
+
+# opencode skill installer (third-party, regenerable)
+.opencode/node_modules/
+skills-lock.json
+.agents/
+
+# Upstream mirror — vendored by hand, NOT synced via git
+# Re-vendor with: git clone --depth=1 https://github.com/Drop-OSS/drop upstream/drop
+upstream/
+
+# Build outputs
+dist/
+.output/
+.nuxt/
+
+# Generated code
+**/*.gen.ts
+**/proto/
+
+# Tooling caches
+.cache/
+.gitleaks/
+
+# Logs
+*.log
+**/logs/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Do NOT ignore LICENSE / AGPL-3.0.LICENSE / README.md
+!LICENSE
+!AGPL-3.0.LICENSE
+!README.md

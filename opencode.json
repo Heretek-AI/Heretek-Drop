@@ -1,0 +1,65 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "heretek/MiniMax-M3",
+  "default_agent": "build",
+  "agent": {
+    "build": {
+      "description": "Default build agent. Writes code, runs cargo, runs slint-viewer.",
+      "tools": {
+        "bash": true,
+        "read": true,
+        "write": true,
+        "edit": true,
+        "grep": true,
+        "glob": true,
+        "task": true
+      }
+    },
+    "rust-builder": {
+      "description": "Specialized Rust crate builder. Async Tokio, JWT crypto, Cargo workspaces.",
+      "tools": {
+        "bash": true,
+        "read": true,
+        "write": true,
+        "edit": true,
+        "grep": true,
+        "glob": true,
+        "task": true
+      }
+    },
+    "ui-builder": {
+      "description": "Slint UI builder. .slint markup, callbacks, component composition, accessibility.",
+      "tools": {
+        "bash": true,
+        "read": true,
+        "write": true,
+        "edit": true,
+        "grep": true,
+        "glob": true,
+        "task": true
+      }
+    },
+    "reviewer": {
+      "description": "Code review focus. Security, AGPL compliance, performance, idioms.",
+      "tools": {
+        "read": true,
+        "grep": true,
+        "glob": true,
+        "task": true
+      }
+    }
+  },
+  "skills": {
+    "paths": [
+      "./.opencode/skills/drop-protocol",
+      "./.opencode/skills/slint-ui",
+      "./.opencode/skills/agpl-compliance",
+      "./.opencode/skills/rust-gui-patterns"
+    ]
+  },
+  "mcp": {
+    "codegraph": {
+      "enabled": true
+    }
+  }
+}

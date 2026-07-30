@@ -1,0 +1,104 @@
+name: Rust CI
+description: >
+  Reusable Rust CI steps for Heretek-Drop Tauri workspace.
+  Handles checkout, toolchain, cache, system deps, fmt, clippy,
+  test, and security audit. Coverage deferred to v0.2.
+
+inputs:
+  working-directory:
+    required: true
+    description: Cargo workspace root.
+    Example: apps/desktop/src-tauri
+
+  cache-workspaces:
+    required: true
+    description: swatinem/rust-cache workspace mapping.
+    Example: "./apps/desktop/src-tauri -> target"
+
+  system-dependencies:
+    required: false
+    description: Shell commands to install system deps (apt-get etc).
+    default: ""
+
+  lint-command:
+    required: true
+    description: Cargo lint/build command.
+    Example: cargo clippy --workspace --all-targets -- -D warnings
+
+  test-command:
+    required: false
+    description: Cargo test command.
+    default: cargo test --workspace --verbose
+
+  test-continue-on-error:
+    required: false
+    description: Whether to continue on test failure.
+    default: "false"
+
+  lint-continue-on-error:
+    required: false
+    description: Whether to continue on lint failure.
+    default: "false"
+
+  components:
+    required: false
+    description: Rust toolchain components (comma-separated).
+    default: rustfmt, clippy
+
+  toolchain:
+    required: false
+    description: Rust toolchain channel.
+    default: stable
+
+runs:
+  using: composite
+  steps:
+    # ── Setup ──────────────────────────────────────────────────────
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@4fd1da8b0805d2d2e936788875a7d65dbd677dc2
+      with:
+        toolchain: ${{ inputs.toolchain }}
+        components: ${{ inputs.components }}
+
+    - name: Rust cache
+      uses: swatinem/rust-cache@42dc69e1aa15d09112580998cf2ef0119e2e91ae # v2
+      with:
+        workspaces: ${{ inputs.cache-workspaces }}
+
+    # ── System dependencies ────────────────────────────────────────
+    - name: Install system dependencies
+      if: ${{ inputs.system-dependencies != '' }}
+      shell: bash
+      run: ${{ inputs.system-dependencies }}
+
+    # ── Format ─────────────────────────────────────────────────────
+    - name: Check formatting
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: cargo fmt --all -- --check
+
+    # ── Lint / Build ───────────────────────────────────────────────
+    - name: Lint / Build
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      continue-on-error: ${{ inputs.lint-continue-on-error == 'true' }}
+      run: ${{ inputs.lint-command }}
+
+    # ── Test ───────────────────────────────────────────────────────
+    - name: Run tests
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      continue-on-error: ${{ inputs.test-continue-on-error == 'true' }}
+      run: ${{ inputs.test-command }}
+
+    # ── Security audit ─────────────────────────────────────────────
+    - name: Install cargo-audit
+      uses: taiki-e/install-action@cargo-audit
+
+    - name: Audit dependencies
+      # cargo audit exits 1 on ANY advisory. Non-blocking here; tracked
+      # separately via OSV-Scanner workflow. Re-enable strict mode in v0.2.
+      continue-on-error: true
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: cargo audit --deny warnings

@@ -1,0 +1,74 @@
+version: 2
+
+# Tauri 2 + Solid.js project. Single Cargo workspace in apps/desktop/src-tauri/
+# and single pnpm workspace at root (apps/* + packages/*).
+
+updates:
+  # ----- pnpm workspace (root, covers apps/* + packages/*) -----
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 10
+    groups:
+      node-minor:
+        update-types: ["minor", "patch"]
+      node-major:
+        update-types: ["major"]
+    commit-message:
+      prefix: "deps"
+      prefix-development: "chore(deps-dev)"
+    labels: ["dependencies", "javascript"]
+    rebase-strategy: "auto"
+
+  # ----- Rust workspace (Tauri 2 core) -----
+  - package-ecosystem: "cargo"
+    directory: "/apps/desktop/src-tauri"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 5
+    groups:
+      rust-minor:
+        update-types: ["minor", "patch"]
+      rust-major:
+        update-types: ["major"]
+    commit-message:
+      prefix: "deps(desktop)"
+    labels: ["dependencies", "rust"]
+
+  # ----- Flatpak manifests -----
+  - package-ecosystem: "docker"
+    directory: "/flatpak"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps(flatpak)"
+    labels: ["dependencies", "flatpak"]
+
+  # ----- GitHub Actions (SHA-pinned updates) -----
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 10
+    groups:
+      actions-minor:
+        update-types: ["minor", "patch"]
+      actions-major:
+        update-types: ["major"]
+    commit-message:
+      prefix: "deps(ci)"
+    labels: ["dependencies", "github-actions"]

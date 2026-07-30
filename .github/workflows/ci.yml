@@ -1,0 +1,90 @@
+name: CI
+
+# Cancel outdated in-progress runs of the same workflow on the same PR
+# when a new commit is pushed. Avoids redundant work.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    branches: ["main"]
+  push:
+    branches: ["main"]
+  merge_group:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  # ── Workflow lint ─────────────────────────────────────────────────
+  actionlint:
+    name: actionlint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: docker://rhysd/actionlint:1.7.7
+        with:
+          args: -color
+
+  # ── Secret scanning ───────────────────────────────────────────────
+  gitleaks:
+    name: gitleaks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: gitleaks/gitleaks-action@9f164fd42599d7c8435f8b8d4e150da86f7e4b7d # v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ── Dependency review ─────────────────────────────────────────────
+  dependency-review:
+    name: dependency-review
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/dependency-review-action@3a7e7d7e29a90d2dd85c3ba8b0e84f4b73b0f1a2 # v4
+        with:
+          fail-on-severity: high
+
+  # ── Shellcheck on shell scripts ───────────────────────────────────
+  shellcheck:
+    name: shellcheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Run shellcheck
+        run: |
+          find . -type f \( -name '*.sh' -o -name '*.bash' \) \
+            -not -path './upstream/*' \
+            -not -path './.git/*' \
+            -not -path './target/*' \
+            | xargs -r shellcheck --severity=warning
+
+  # ── Hadolint (deferred — no Dockerfile in v0.1) ───────────────────
+  # hadolint:
+  #   name: hadolint
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+  #     - uses: docker://hadolint/hadolint:v2.13.0-beta1
+  #       with:
+  #         args: --no-fail Dockerfile
+
+  # ── Cargo deny (license + ban + advisory) ─────────────────────────
+  cargo-deny:
+    name: cargo-deny
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: dtolnay/rust-toolchain@4fd1da8b0805d2d2e936788875a7d65dbd677dc2
+        with:
+          toolchain: stable
+      - name: Install cargo-deny
+        uses: taiki-e/install-action@0e5f08c8888a52d1d7a85b8ca6c8b9b5f4b9f7d3 # cargo-deny
+      - name: Run cargo-deny
+        run: cargo deny check

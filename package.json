@@ -1,0 +1,28 @@
+{
+  "name": "heretek-drop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Native AGPL-3.0 client for Drop (game distribution platform). Rust + Slint.",
+  "license": "AGPL-3.0",
+  "packageManager": "pnpm@10.33.0",
+  "scripts": {
+    "lint:md": "prettier --check '**/*.md'",
+    "format:md": "prettier --write '**/*.md'",
+    "lint:yml": "prettier --check '**/*.{yml,yaml}'",
+    "format:yml": "prettier --write '**/*.{yml,yaml}'",
+    "lint:rs": "cargo fmt --all -- --check",
+    "format:rs": "cargo fmt --all",
+    "clippy": "cargo clippy --workspace --all-targets -- -D warnings",
+    "test": "cargo test --workspace",
+    "build": "cargo build --workspace",
+    "release": "cargo build --workspace --release",
+    "audit": "cargo audit"
+  },
+  "devDependencies": {
+    "prettier": "3.6.2"
+  },
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=10"
+  }
+}

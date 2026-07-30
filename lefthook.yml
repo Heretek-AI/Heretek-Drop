@@ -1,0 +1,78 @@
+# Lefthook — Heretek-Drop
+# Ported from PR #200's .husky/pre-commit + .husky/pre-push (BillyOutlast/drop@cc3f6455).
+# Why Lefthook over Husky: faster, zero Node deps, native glob + staged-file globs.
+
+min_version: 1.7.0
+
+pre-commit:
+  parallel: true
+  commands:
+    # ── Rust format check ─────────────────────────────────────────
+    rust-fmt:
+      glob: "*.rs"
+      run: cargo fmt --all -- --check
+
+    # ── Rust clippy ────────────────────────────────────────────────
+    rust-clippy:
+      glob: "*.rs"
+      run: cargo clippy --workspace --all-targets -- -D warnings
+
+    # ── Cargo deny (license + ban + advisory) ─────────────────────
+    cargo-deny:
+      glob: "**/Cargo.toml"
+      run: cargo deny check
+
+    # ── Markdown / YAML formatting ────────────────────────────────
+    prettier:
+      glob: "*.{md,yml,yaml,json,slint}"
+      run: pnpm exec prettier --write {staged_files}
+
+    # ── Shellcheck ────────────────────────────────────────────────
+    shellcheck:
+      glob: "*.{sh,bash}"
+      run: shellcheck --severity=warning {staged_files}
+
+    # ── EditorConfig compliance ───────────────────────────────────
+    editorconfig:
+      glob: "*"
+      run: editorconfig-checker {staged_files}
+
+    # ── Bare test.only() / it.only() block ────────────────────────
+    # Catches `test.only(` or `it.only(` in staged Rust/JS/TS files.
+    # Pure Rust convention: no `.only` exists, but defend against future test-only adds.
+    bare-assertion-scan:
+      glob: "*.{rs,ts,tsx,js,jsx}"
+      run: |
+        if grep -nE '(test|it)\.only\(' {staged_files} 2>/dev/null; then
+          echo "ERROR: found test.only() / it.only() in staged files."
+          echo "       Remove .only() before commit."
+          exit 1
+        fi
+
+    # ── Secrets leak (gitleaks) ───────────────────────────────────
+    gitleaks:
+      glob: "*"
+      run: gitleaks protect --staged --no-banner
+
+pre-push:
+  parallel: false
+  commands:
+    # ── Full test suite ───────────────────────────────────────────
+    cargo-test:
+      run: cargo test --workspace --verbose
+
+    # ── Workspace build verification ──────────────────────────────
+    cargo-build:
+      run: cargo build --workspace
+
+commit-msg:
+  commands:
+    # ── Conventional commits lint ─────────────────────────────────
+    commitlint:
+      run: pnpm exec commitlint --edit {1}
+
+post-merge:
+  commands:
+    # ── Re-resolve deps if Cargo.lock changed ─────────────────────
+    cargo-fetch:
+      run: cargo fetch --locked

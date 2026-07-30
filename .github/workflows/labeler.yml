@@ -1,0 +1,21 @@
+name: Labeler
+
+on:
+  pull_request:
+    branches: ["main"]
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  label:
+    name: Apply path-based labels
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/labeler@4d0c3f5c4afb1e3148d3a96a4e2a86e1c1c5b9bd # v5
+        with:
+          configuration-path: .github/labeler.yml
+          token: ${{ secrets.GITHUB_TOKEN }}

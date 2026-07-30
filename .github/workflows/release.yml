@@ -1,0 +1,125 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*.*.*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to release (e.g. v0.1.0)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build-flatpak:
+    name: Build flatpak (Linux x86_64 + aarch64)
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x86_64, aarch64]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Determine tag
+        id: tag
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            echo "name=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          else
+            echo "name=${{ inputs.tag }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install flatpak tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y flatpak flatpak-builder
+
+      - name: Add flathub remote
+        run: flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+      - name: Install SDK + runtime
+        run: |
+          flatpak install -y flathub \
+            org.freedesktop.Platform//23.08 \
+            org.freedesktop.Sdk//23.08 \
+            org.freedesktop.Sdk.Extension.rust-stable//23.08
+
+      - name: Build flatpak
+        working-directory: apps/desktop
+        run: |
+          flatpak-builder --arch=${{ matrix.arch }} \
+            --repo=repo \
+            --force-clean \
+            build flatpak/app.heretek.drop.yml
+
+      - name: Export flatpak bundle
+        working-directory: apps/desktop
+        run: |
+          flatpak build-bundle repo \
+            "app.heretek.drop-${{ steps.tag.outputs.name }}-${{ matrix.arch }}.flatpak" \
+            app.heretek.drop
+
+      - name: Upload flatpak artifact
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4
+        with:
+          name: heretek-drop-${{ steps.tag.outputs.name }}-${{ matrix.arch }}.flatpak
+          path: apps/desktop/app.heretek.drop-${{ steps.tag.outputs.name }}-${{ matrix.arch }}.flatpak
+
+  release:
+    name: GitHub Release
+    needs: build-flatpak
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Determine tag
+        id: tag
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            echo "name=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          else
+            echo "name=${{ inputs.tag }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc8016b9 # v4
+        with:
+          path: artifacts
+
+      - name: Generate release notes
+        id: notes
+        run: |
+          {
+            echo "## Heretek-Drop ${{ steps.tag.outputs.name }}"
+            echo ""
+            echo "Linux flatpak builds for x86_64 and aarch64."
+            echo ""
+            echo "### Install"
+            echo ""
+            echo '```bash'
+            echo "# x86_64"
+            echo "flatpak install ./app.heretek.drop-${{ steps.tag.outputs.name }}-x86_64.flatpak"
+            echo ""
+            echo "# aarch64"
+            echo "flatpak install ./app.heretek.drop-${{ steps.tag.outputs.name }}-aarch64.flatpak"
+            echo '```'
+          } > release-notes.md
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@4e65d969a86e3f10cd32e19e066d89c2e39c553f # v2
+        with:
+          tag_name: ${{ steps.tag.outputs.name }}
+          name: ${{ steps.tag.outputs.name }}
+          body_path: release-notes.md
+          files: |
+            artifacts/**/*.flatpak
+          draft: false
+          prerelease: ${{ contains(steps.tag.outputs.name, '-rc') || contains(steps.tag.outputs.name, '-beta') || contains(steps.tag.outputs.name, '-alpha') }}

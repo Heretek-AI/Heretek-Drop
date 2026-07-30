@@ -1,0 +1,32 @@
+# Build output
+dist/
+.output/
+.nuxt/
+coverage/
+target/
+
+# Dependencies
+**/node_modules/
+
+# Generated code
+**/proto/
+**/*.gen.ts
+
+# External / auto-generated code (not maintained by us)
+upstream/
+
+# Read-only reference
+upstream/drop/
+
+# Test artifacts
+**/test-results/
+**/playwright-report/
+
+# Toolchain caches
+.omo/
+.codegraph/
+.opencode/
+
+# AGPL-3.0.LICENSE is auto-generated, don't format
+AGPL-3.0.LICENSE
+LICENSE

@@ -1,0 +1,70 @@
+# labeler.yml — config for actions/labeler@v5
+# Path-based PR labels for Heretek-Drop.
+
+# Apps
+apps/desktop/**/*:
+  - app:desktop
+
+# Sub-crates
+apps/desktop/crates/protocol/**/*:
+  - crate:protocol
+apps/desktop/crates/auth/**/*:
+  - crate:auth
+apps/desktop/crates/database/**/*:
+  - crate:database
+apps/desktop/crates/download_manager/**/*:
+  - crate:download
+apps/desktop/crates/process_manager/**/*:
+  - crate:process
+
+# UI
+apps/desktop/src/ui/**/*:
+  - ui:slint
+
+# CI
+.github/workflows/**/*:
+  - ci
+.github/actions/**/*:
+  - ci
+.github/dependabot.yml:
+  - ci
+.github/CODEOWNERS:
+  - ci
+
+# Git hooks
+lefthook.yml:
+  - hooks
+
+# Agent config
+.opencode/**/*:
+  - agents
+AGENTS.md:
+  - agents
+CLAUDE.md:
+  - agents
+
+# License + AGPL
+LICENSE:
+  - license
+AGPL-3.0.LICENSE:
+  - license
+
+# Security
+security/**/*:
+  - security
+
+# Docs
+README.md:
+  - docs
+"**/*.md":
+  - docs
+
+# Dependencies
+package.json:
+  - deps
+pnpm-lock.yaml:
+  - deps
+Cargo.toml:
+  - deps
+"**/Cargo.toml":
+  - deps
