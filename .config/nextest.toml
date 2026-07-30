@@ -1,0 +1,18 @@
+# Nextest profile for Heretek-Drop.
+# Reference: https://nexte.st/docs/configuration/
+#
+# AI_HARNESS_PLAN.md §3.3 — parallel-by-default, generous slow-test
+# timeout, no fail-fast (CI should report all failures), no retries
+# (tests must be deterministic).
+
+[profile.default]
+test-threads = "num-cpus"
+slow-timeout = { period = "60s", terminate-after = 3 }
+fail-fast = false
+retries = 0
+
+[profile.ci]
+inherits = "default"
+test-threads = "num-cpus"
+fail-fast = false
+retries = 1

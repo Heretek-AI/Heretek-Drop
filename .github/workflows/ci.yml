@@ -129,12 +129,26 @@ jobs:
           shared-key: "heretek-drop"
       - run: RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --workspace
 
-  # ── Dependency vulnerability scan ────────────────────────────────
-  cargo-audit:
-    name: cargo audit
+  # ── Test runner (nextest for parallel execution) ─────────────────
+  cargo-test:
+    name: cargo test (nextest)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
-      - run: cargo install cargo-audit --locked
-      - run: cargo audit
+        with:
+          components: rustfmt, clippy
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-nextest
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "apps/desktop -> target"
+          key: ${{ hashFiles('Cargo.lock') }}
+          shared-key: "heretek-drop"
+      - run: cargo nextest run --workspace --all-features --profile ci
+
+  # ── Dependency vulnerability scan (PR-time gate) ─────────────────
+  # PR-time audit now lives in cargo-deny advisories check above.
+  # Weekly scheduled + Cargo.lock-triggered audit is in
+  # .github/workflows/cargo-audit.yml (split out per AI_HARNESS_PLAN.md §3.1).
