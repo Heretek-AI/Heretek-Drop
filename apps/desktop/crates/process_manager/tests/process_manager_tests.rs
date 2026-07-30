@@ -54,7 +54,9 @@ fn launch_spec_serde_roundtrip() {
         executable: PathBuf::from("/usr/games/portal2"),
         working_dir: Some(PathBuf::from("/opt/portal2")),
         args: vec!["-fullscreen".into(), "-novid".into()],
-        env: vec![("HOME".into(), "/home/user".into())].into_iter().collect(),
+        env: vec![("HOME".into(), "/home/user".into())]
+            .into_iter()
+            .collect(),
     };
     let json = serde_json::to_string(&spec).unwrap();
     let deserialized: LaunchSpec = serde_json::from_str(&json).unwrap();

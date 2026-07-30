@@ -121,7 +121,10 @@ async fn database_in_memory_all_types() {
     db.write("float", &3.14_f64).await.unwrap();
     db.write("bool", &true).await.unwrap();
 
-    assert_eq!(db.read::<String>("str").await.unwrap(), Some("hello".into()));
+    assert_eq!(
+        db.read::<String>("str").await.unwrap(),
+        Some("hello".into())
+    );
     assert_eq!(db.read::<i32>("int").await.unwrap(), Some(42));
     assert_eq!(db.read::<f64>("float").await.unwrap(), Some(3.14));
     assert_eq!(db.read::<bool>("bool").await.unwrap(), Some(true));

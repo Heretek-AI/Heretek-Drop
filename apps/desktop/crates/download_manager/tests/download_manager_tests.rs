@@ -4,7 +4,7 @@
 //! Unit tests for the download manager crate.
 
 use heretek_drop_download_manager::{
-    default_downloads_dir, DownloadManager, DownloadProgress, DownloadRequest, DownloadState,
+    DownloadManager, DownloadProgress, DownloadRequest, DownloadState, default_downloads_dir,
 };
 
 /// Default downloads dir resolves to a path.
