@@ -29,18 +29,18 @@ jobs:
           args: -color
 
   # ── Secret scanning ───────────────────────────────────────────────
-  gitleaks:
-    name: gitleaks
+  betterleaks:
+    name: betterleaks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - name: Run gitleaks
-        uses: docker://zricethezav/gitleaks:v8
+          fetch-depth: 0
+      - name: Run betterleaks
+        uses: docker://ghcr.io/betterleaks/betterleaks:latest
         with:
-          entrypoint: gitleaks
-          args: "detect --source=. --redact --verbose"
+          args: "git . --verbose --git-workers=4"
 
   # ── Dependency review ─────────────────────────────────────────────
   dependency-review:
