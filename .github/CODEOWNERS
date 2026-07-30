@@ -6,21 +6,24 @@
 * @heretek-maintainers
 
 # Security-sensitive: auth, JWT, drop-protocol client
-/apps/desktop/src-tauri/crates/protocol/ @heretek-maintainers
-/apps/desktop/src-tauri/crates/auth/ @heretek-maintainers
+/apps/desktop/crates/protocol/ @heretek-maintainers
+/apps/desktop/crates/auth/ @heretek-maintainers
 
 # Build, deps, CI
 /.github/workflows/ @heretek-maintainers
-/lefthook.yml @heretek-maintainers
+/.husky/ @heretek-maintainers
 /Cargo.toml @heretek-maintainers
 /AGENTS.md @heretek-maintainers
 /CLAUDE.md @heretek-maintainers
 /CONTRIBUTING.md @heretek-maintainers
 
 # Flatpak packaging
-/flatpak/ @heretek-maintainers
+/apps/desktop/flatpak/ @heretek-maintainers
 
 # License + AGPL compliance
 /LICENSE @heretek-maintainers
 /AGPL-3.0.LICENSE @heretek-maintainers
 /security/ @heretek-maintainers
+
+# Governance
+/docs/adr/ @heretek-maintainers
