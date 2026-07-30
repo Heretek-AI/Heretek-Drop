@@ -15,6 +15,7 @@ export component LibraryPage inherits Rectangle {
     in-out property <string> search-query: "";
     in-out property <bool> is-loading: false;
 
+    callback refresh();
     callback download-game(int);
 
     background: #1e1e1e;
@@ -32,17 +33,9 @@ export component LibraryPage inherits Rectangle {
                 font-weight: 600;
                 vertical-alignment: center;
             }
-            Rectangle {
-                horizontal-stretch: 1;
-                height: 32px;
-                background: #2a2a2a;
-                border-radius: 4px;
-                Text {
-                    text: root.search-query == "" ? "Search games..." : root.search-query;
-                    color: root.search-query == "" ? #666666 : #ffffff;
-                    padding: 8px;
-                    vertical-alignment: center;
-                }
+            Button {
+                text: "Refresh";
+                clicked => { root.refresh(); }
             }
         }
 
@@ -61,53 +54,46 @@ export component LibraryPage inherits Rectangle {
                 horizontal-alignment: center;
             }
             Text {
-                text: "Browse the store to add games to your library.";
+                text: "Sign in and click Refresh to load your games.";
                 color: #666666;
                 font-size: 12px;
                 horizontal-alignment: center;
             }
         }
 
-        // Use a fixed-height grid for v0.1. >100 items needs virtualization.
-        GridLayout {
-            spacing: 16px;
-            padding: 8px;
-            Row {
-                for game in root.games: VerticalLayout {
-                    spacing: 8px;
-                    Rectangle {
-                        background: #2a2a2a;
-                        border-radius: 4px;
-                        width: 160px;
-                        height: 220px;
-                        if game.cover-image.width > 0: Image {
-                            source: game.cover-image;
-                            width: 160px;
-                            height: 220px;
-                            image-fit: cover;
-                        }
-                    }
+        for game in root.games: Rectangle {
+            background: #2a2a2a;
+            border-radius: 4px;
+            height: 80px;
+            HorizontalLayout {
+                padding: 12px;
+                spacing: 12px;
+                Rectangle {
+                    width: 56px;
+                    height: 56px;
+                    background: #1a1a1a;
+                    border-radius: 4px;
+                }
+                VerticalLayout {
+                    horizontal-stretch: 1;
+                    spacing: 4px;
                     Text {
                         text: game.title;
                         color: #ffffff;
-                        font-size: 13px;
-                        horizontal-alignment: center;
-                        width: 160px;
+                        font-size: 14px;
+                        font-weight: 600;
                         overflow: elide;
                     }
                     Text {
                         text: game.developer;
                         color: #888888;
                         font-size: 11px;
-                        horizontal-alignment: center;
-                        width: 160px;
                         overflow: elide;
                     }
-                    Button {
-                        text: "Download";
-                        width: 160px;
-                        clicked => { root.download-game(game.id); }
-                    }
+                }
+                Button {
+                    text: "Download";
+                    clicked => { root.download-game(game.id); }
                 }
             }
         }

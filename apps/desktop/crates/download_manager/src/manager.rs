@@ -5,7 +5,6 @@
 
 use std::collections::HashMap;
 use std::path::PathBuf;
-use std::sync::atomic::{AtomicU32, Ordering};
 use std::sync::Arc;
 
 use anyhow::Context;
@@ -68,7 +67,6 @@ struct ManagerInner {
     active: Mutex<HashMap<u32, JoinHandle<()>>>,
     progress_tx: flume::Sender<DownloadProgress>,
     progress_rx: flume::Receiver<DownloadProgress>,
-    next_id: AtomicU32,
     max_concurrent: u32,
     downloads_dir: PathBuf,
 }
@@ -82,7 +80,6 @@ impl DownloadManager {
                 active: Mutex::new(HashMap::new()),
                 progress_tx,
                 progress_rx,
-                next_id: AtomicU32::new(1),
                 max_concurrent,
                 downloads_dir,
             }),
@@ -104,7 +101,10 @@ impl DownloadManager {
         let dest = req.dest.clone();
         let tx = self.inner.progress_tx.clone();
 
-        let dir = dest.parent().map(|p| p.to_path_buf()).unwrap_or_else(|| self.inner.downloads_dir.clone());
+        let dir = dest
+            .parent()
+            .map(|p| p.to_path_buf())
+            .unwrap_or_else(|| self.inner.downloads_dir.clone());
         if let Err(e) = tokio::fs::create_dir_all(&dir).await {
             error!("failed to create download dir {dir:?}: {e}");
         }
@@ -213,7 +213,7 @@ async fn run_download(
             Err(e) => {
                 let _ = tx.send(DownloadProgress {
                     id,
-                    downloaded_bytes,
+                    downloaded_bytes: downloaded,
                     total_bytes: Some(total_bytes),
                     state: DownloadState::Failed,
                     error: Some(format!("read stream: {e}")),
@@ -226,7 +226,7 @@ async fn run_download(
         if let Err(e) = tokio::io::AsyncWriteExt::write_all(&mut file, &chunk).await {
             let _ = tx.send(DownloadProgress {
                 id,
-                downloaded_bytes,
+                downloaded_bytes: downloaded,
                 total_bytes: Some(total_bytes),
                 state: DownloadState::Failed,
                 error: Some(format!("write file: {e}")),
@@ -248,7 +248,7 @@ async fn run_download(
     if actual != expected_checksum {
         let _ = tx.send(DownloadProgress {
             id,
-            downloaded_bytes,
+            downloaded_bytes: downloaded,
             total_bytes: Some(total_bytes),
             state: DownloadState::Failed,
             error: Some(format!(

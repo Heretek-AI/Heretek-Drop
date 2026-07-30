@@ -27,10 +27,3 @@ pub enum DbError {
     #[error("no config directory available")]
     NoConfigDir,
 }
-
-/// Convert from `rustbreak::Error` to our `DbError`.
-impl From<rustbreak::Error> for DbError {
-    fn from(e: rustbreak::Error) -> Self {
-        DbError::Corruption(e.to_string())
-    }
-}

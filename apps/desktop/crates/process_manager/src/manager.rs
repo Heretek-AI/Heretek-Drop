@@ -39,15 +39,12 @@ impl ProcessManager {
             return Err(ProcessError::NotFound(spec.executable.clone()));
         }
 
-        let workdir = spec
-            .working_dir
-            .clone()
-            .unwrap_or_else(|| {
-                spec.executable
-                    .parent()
-                    .map(|p| p.to_path_buf())
-                    .unwrap_or_default()
-            });
+        let workdir = spec.working_dir.clone().unwrap_or_else(|| {
+            spec.executable
+                .parent()
+                .map(|p| p.to_path_buf())
+                .unwrap_or_default()
+        });
 
         let mut cmd = Command::new(&spec.executable);
         cmd.args(&spec.args);
@@ -59,9 +56,9 @@ impl ProcessManager {
         }
 
         let child = cmd.spawn()?;
-        let pid = child.id().ok_or_else(|| {
-            std::io::Error::new(std::io::ErrorKind::Other, "no pid assigned to child")
-        })?;
+        let pid = child
+            .id()
+            .ok_or_else(|| std::io::Error::other("no pid assigned to child"))?;
 
         let proc = GameProcess {
             id: spec.id,
@@ -70,7 +67,11 @@ impl ProcessManager {
             started_at: Utc::now(),
         };
 
-        self.inner.processes.lock().await.insert(spec.id, proc.clone());
+        self.inner
+            .processes
+            .lock()
+            .await
+            .insert(spec.id, proc.clone());
         info!(id = spec.id, title = %spec.title, pid, "game launched");
         Ok(proc)
     }
@@ -82,7 +83,13 @@ impl ProcessManager {
 
     /// List all tracked processes.
     pub async fn list(&self) -> Vec<GameProcess> {
-        self.inner.processes.lock().await.values().cloned().collect()
+        self.inner
+            .processes
+            .lock()
+            .await
+            .values()
+            .cloned()
+            .collect()
     }
 
     /// Kill a tracked game process.

@@ -19,6 +19,6 @@ serde_json = { workspace = true }
 thiserror = { workspace = true }
 anyhow = { workspace = true }
 tracing = { workspace = true }
-tokio = { workspace = true }
-rustbreak = { workspace = true }
+tokio = { workspace = true, features = ["sync"] }
+chrono = { workspace = true }
 directories = { workspace = true }

@@ -18,6 +18,9 @@ target/
 .flatpak-builder-caches/
 .flatpak_repos/
 
+# fallow cache
+.fallow/
+
 # IDE / editor
 .idea/
 .vscode/

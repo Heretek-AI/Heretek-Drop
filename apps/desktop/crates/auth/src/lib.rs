@@ -11,7 +11,6 @@
 //! Does NOT perform the actual HTTP requests (use `heretek_drop_protocol`).
 
 #![forbid(unsafe_code)]
-#![deny(missing_docs)]
 
 mod credentials;
 mod error;

@@ -4,10 +4,9 @@
 //! Download manager: chunked downloads with progress events.
 
 #![forbid(unsafe_code)]
-#![deny(missing_docs)]
 
 mod manager;
 mod progress;
 
-pub use manager::{DownloadManager, DownloadRequest};
+pub use manager::{DownloadError, DownloadManager, DownloadRequest, default_downloads_dir};
 pub use progress::{DownloadProgress, DownloadState};

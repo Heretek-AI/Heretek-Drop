@@ -1,0 +1,66 @@
+#!/usr/bin/env sh
+# Heretek-Drop pre-commit hook
+# Runs: cargo fmt, cargo clippy, fallow, prettier
+# Installed by Husky 9 — do not run manually.
+
+set -e
+
+# Color helpers
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+step() { printf "${YELLOW}==>${NC} %s\n" "$1"; }
+ok()   { printf "${GREEN}✓${NC} %s\n" "$1"; }
+fail() { printf "${RED}✗${NC} %s\n" "$1" >&2; exit 1; }
+
+# Stash unstaged unstaged changes for fallow (it walks the working tree).
+# We only run fallow on the staged version of the tree.
+# Cheap trick: use git stash for files fallow cares about.
+
+# ── 1. cargo fmt ───────────────────────────────────────────────────────────
+step "cargo fmt --all -- --check"
+if cargo fmt --all -- --check; then
+    ok "rust formatting clean"
+else
+    fail "rust formatting drift. Run: cargo fmt --all"
+fi
+
+# ── 2. cargo clippy ────────────────────────────────────────────────────────
+step "cargo clippy --workspace --all-targets -- -D warnings"
+if cargo clippy --workspace --all-targets -- -D warnings; then
+    ok "clippy clean"
+else
+    fail "clippy errors. Fix: cargo clippy --workspace --all-targets"
+fi
+
+# ── 3. fallow ─────────────────────────────────────────────────────────────
+# Fallow audits the JS/TS dep graph. It walks the working tree, so we
+# run it from the repo root. Failures mean unused files or unlisted deps.
+step "fallow"
+if pnpm exec fallow; then
+    ok "fallow clean"
+else
+    fail "fallow reported issues. Check: pnpm exec fallow"
+fi
+
+# ── 4. prettier ───────────────────────────────────────────────────────────
+# Prettier formats Markdown, YAML, and JSON. We exclude .slint (Slint has
+# its own formatter), generated files, vendored upstream, and build output.
+step "prettier --check on staged files"
+STAGED_NON_SLINT=$(git diff --cached --name-only --diff-filter=ACMR | \
+    grep -E '\.(md|yml|yaml|json|cjs|mjs|ts|tsx|js|jsx)$' || true)
+
+if [ -z "$STAGED_NON_SLINT" ]; then
+    ok "no staged JS/MD/YAML/JSON files to format"
+else
+    if pnpm exec prettier --check $STAGED_NON_SLINT; then
+        ok "prettier clean"
+    else
+        fail "prettier drift. Run: pnpm format:md && pnpm format:yml"
+    fi
+fi
+
+echo ""
+ok "pre-commit checks passed"

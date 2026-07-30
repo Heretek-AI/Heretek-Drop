@@ -25,3 +25,5 @@ thiserror = { workspace = true }
 anyhow = { workspace = true }
 chrono = { workspace = true }
 base64 = "0.22"
+jsonwebtoken = "9.3"
+url = "2.5"

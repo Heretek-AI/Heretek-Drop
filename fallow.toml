@@ -1,0 +1,39 @@
+entry = ["package.json"]
+
+ignorePatterns = [
+    "**/node_modules/**",
+    "**/target/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/.git/**",
+    "**/coverage/**",
+    "**/upstream/**",
+    "**/flatpak/**",
+    "**/test-results/**",
+    "**/playwright-report/**",
+    "**/*.gen.ts",
+    "**/proto/**",
+    "**/*.lock",
+    "**/*.yaml",
+    "**/*.yml",
+    "**/*.toml",
+    "**/*.rs",
+    "**/*.slint",
+    "**/*.md",
+    ".opencode/**",
+    "apps/desktop/crates/**",
+    "apps/desktop/src/**",
+    "upstream/**",
+]
+
+ignoreDependencies = ["heretek-drop-protocol", "heretek-drop-auth", "heretek-drop-database", "heretek-drop-download-manager", "heretek-drop-process-manager", "heretek-drop-shared"]
+
+[duplicates]
+enabled = true
+mode = "mild"
+minTokens = 50
+minLines = 5
+
+[health]
+maxCyclomatic = 20
+maxCognitive = 15

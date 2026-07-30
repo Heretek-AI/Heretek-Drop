@@ -6,7 +6,7 @@
 #![cfg_attr(all(not(debug_assertions), target_os = "linux"), deny(missing_docs))]
 
 use anyhow::Context;
-use tracing_subscriber::{fmt, prelude::*, EnvFilter};
+use tracing_subscriber::{EnvFilter, fmt, prelude::*};
 
 /// Initialize structured logging from `RUST_LOG` env var, defaulting to `info`.
 fn init_logging() {

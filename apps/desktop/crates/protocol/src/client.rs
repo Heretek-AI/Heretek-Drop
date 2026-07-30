@@ -5,10 +5,11 @@
 
 use std::time::Duration;
 
+use base64::Engine;
 use chrono::Utc;
-use jsonwebtoken::{encode, Algorithm, EncodingKey, Header};
+use jsonwebtoken::{Algorithm, EncodingKey, Header, encode};
 use reqwest::Client as ReqwestClient;
-use serde::{de::DeserializeOwned, Serialize};
+use serde::de::DeserializeOwned;
 use tracing::{debug, instrument};
 
 use crate::endpoints::Endpoints;
@@ -56,7 +57,12 @@ impl Client {
     #[instrument(skip(self))]
     pub async fn auth_initiate(&self) -> Result<InitiateResponse> {
         let url = self.endpoints.auth_initiate();
-        let res = self.http.post(url).json(&serde_json::json!({})).send().await?;
+        let res = self
+            .http
+            .post(url)
+            .json(&serde_json::json!({}))
+            .send()
+            .await?;
         parse_response(res).await
     }
 
@@ -74,48 +80,76 @@ impl Client {
     }
 
     /// GET `/api/v1/client/user` — fetch user profile.
-    #[instrument(skip(self, credentials))]
-    pub async fn user(&self, credentials: &super::super::auth::Credentials) -> Result<User> {
+    #[instrument(skip(self, auth))]
+    pub async fn user(&self, auth: &AuthContext<'_>) -> Result<User> {
         let url = self.endpoints.user();
-        let res = self.http.get(url).headers(auth_headers(credentials)?).send().await?;
+        let res = self
+            .http
+            .get(url)
+            .headers(auth_headers(auth)?)
+            .send()
+            .await?;
         parse_response(res).await
     }
 
     /// GET `/api/v1/client/user/library` — fetch owned games.
-    #[instrument(skip(self, credentials))]
-    pub async fn user_library(
-        &self,
-        credentials: &super::super::auth::Credentials,
-    ) -> Result<Vec<Game>> {
+    #[instrument(skip(self, auth))]
+    pub async fn user_library(&self, auth: &AuthContext<'_>) -> Result<Vec<Game>> {
         let url = self.endpoints.user_library();
         let res = self
             .http
             .get(url)
-            .headers(auth_headers(credentials)?)
+            .headers(auth_headers(auth)?)
             .send()
             .await?;
         parse_response(res).await
     }
 
     /// GET `/api/v1/client/game/{id}` — fetch game detail.
-    #[instrument(skip(self, credentials))]
-    pub async fn game(&self, id: u32, credentials: &super::super::auth::Credentials) -> Result<Game> {
+    #[instrument(skip(self, auth))]
+    pub async fn game(&self, id: u32, auth: &AuthContext<'_>) -> Result<Game> {
         let url = self.endpoints.game(id);
-        let res = self.http.get(url).headers(auth_headers(credentials)?).send().await?;
+        let res = self
+            .http
+            .get(url)
+            .headers(auth_headers(auth)?)
+            .send()
+            .await?;
         parse_response(res).await
     }
 
     /// GET `/api/v1/client/game/{id}/versions` — list download options.
-    #[instrument(skip(self, credentials))]
+    #[instrument(skip(self, auth))]
     pub async fn game_versions(
         &self,
         id: u32,
-        credentials: &super::super::auth::Credentials,
+        auth: &AuthContext<'_>,
     ) -> Result<Vec<VersionDownloadOption>> {
         let url = self.endpoints.game_versions(id);
-        let res = self.http.get(url).headers(auth_headers(credentials)?).send().await?;
+        let res = self
+            .http
+            .get(url)
+            .headers(auth_headers(auth)?)
+            .send()
+            .await?;
         parse_response(res).await
     }
+}
+
+/// Authentication context for a Drop API request.
+///
+/// Decoupled from the `heretek_drop_auth::Credentials` struct so the
+/// protocol crate stays free of auth-flow dependencies.
+#[derive(Debug, Clone)]
+pub struct AuthContext<'a> {
+    /// Base64-encoded ES384 private key (PKCS#8 DER).
+    pub private: &'a str,
+    /// Base64-encoded ES384 certificate (X.509 DER). Currently unused by
+    /// the client but kept for future mutual-TLS paths.
+    #[allow(dead_code)]
+    pub certificate: &'a str,
+    /// Client ID issued by the server.
+    pub client_id: &'a str,
 }
 
 /// Builder for `Client`.
@@ -153,13 +187,10 @@ impl ClientBuilder {
     }
 }
 
-/// Build the `Authorization: JWT <client_id> <token>` header for an authenticated request.
-fn auth_headers(
-    credentials: &super::super::auth::Credentials,
-) -> Result<reqwest::header::HeaderMap> {
-    use base64::Engine;
+/// Build the `Authorization: JWT <client_id> <token>` header.
+fn auth_headers(auth: &AuthContext<'_>) -> Result<reqwest::header::HeaderMap> {
     let private_key_bytes = base64::engine::general_purpose::STANDARD
-        .decode(&credentials.private)
+        .decode(auth.private)
         .map_err(|e| ProtocolError::Config(format!("base64 decode private key: {e}")))?;
     let private_key = EncodingKey::from_ec_pem(&private_key_bytes)
         .map_err(|e| ProtocolError::Config(format!("decode private key: {e}")))?;
@@ -170,13 +201,15 @@ fn auth_headers(
     };
     let header = Header::new(Algorithm::ES384);
     let token = encode(&header, &claims, &private_key)?;
-    let value = format!("JWT {} {}", credentials.id, token);
+    let value = format!("JWT {} {}", auth.client_id, token);
     let mut headers = reqwest::header::HeaderMap::new();
     headers.insert(
         reqwest::header::AUTHORIZATION,
-        value.parse().map_err(|e: reqwest::header::InvalidHeaderValue| {
-            ProtocolError::Config(format!("invalid auth header: {e}"))
-        })?,
+        value
+            .parse()
+            .map_err(|e: reqwest::header::InvalidHeaderValue| {
+                ProtocolError::Config(format!("invalid auth header: {e}"))
+            })?,
     );
     Ok(headers)
 }
@@ -185,7 +218,7 @@ fn auth_headers(
 async fn parse_response<T: DeserializeOwned>(res: reqwest::Response) -> Result<T> {
     let status = res.status();
     if !status.is_success() {
-        let message = res.text().await.unwrap_or_else(|_| String::new());
+        let message = res.text().await.unwrap_or_default();
         debug!(%status, message, "server returned non-success");
         return Err(ProtocolError::Server {
             status: status.as_u16(),
@@ -194,15 +227,4 @@ async fn parse_response<T: DeserializeOwned>(res: reqwest::Response) -> Result<T
     }
     let body = res.json::<T>().await?;
     Ok(body)
-}
-
-/// Serialize a body and POST it.
-#[allow(dead_code)]
-async fn post_json<T: DeserializeOwned, B: Serialize>(
-    client: &ReqwestClient,
-    url: &reqwest::Url,
-    body: &B,
-) -> Result<T> {
-    let res = client.post(url.clone()).json(body).send().await?;
-    parse_response(res).await
 }

@@ -18,7 +18,7 @@ Every Rust source file MUST start with:
 // SPDX-License-Identifier: AGPL-3.0
 ```
 
-Enforce via lefthook pre-commit.
+Enforce via Husky pre-commit.
 
 ## LICENSE file
 
@@ -74,7 +74,7 @@ Cost: ~3-6 weeks of pure re-implementation. **Not in v0.1 scope.**
 
 - `cargo deny` lints check dependencies' licenses
 - `LICENSE` and `AGPL-3.0.LICENSE` are git-tracked (NOT in `.gitignore`)
-- Lefthook blocks commits without AGPL header
+- Husky pre-commit blocks commits without AGPL header
 
 ## Don't
 

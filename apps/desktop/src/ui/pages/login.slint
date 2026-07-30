@@ -7,6 +7,7 @@ export component LoginPage inherits Rectangle {
     in-out property <string> username: "";
     in-out property <string> password: "";
     in-out property <string> error: "";
+    in-out property <string> login-error: "";
     in-out property <bool> is-loading: false;
 
     callback login(string, string);
@@ -27,47 +28,23 @@ export component LoginPage inherits Rectangle {
         }
 
         Text {
-            text: "Authenticate via your Drop server. The browser will open for login.";
+            text: "Click the button below to open the Drop auth page in your browser.";
             color: #888888;
             font-size: 13px;
             horizontal-alignment: center;
             wrap: word-wrap;
         }
 
-        Rectangle {
-            width: 360px;
-            height: 80px;
-            VerticalLayout {
-                padding: 8px;
-                spacing: 8px;
-                Text {
-                    text: "Server URL";
-                    color: #aaaaaa;
-                    font-size: 12px;
-                }
-                Rectangle {
-                    height: 32px;
-                    background: #2a2a2a;
-                    border-radius: 4px;
-                    Text {
-                        text: "https://drop.example.com";
-                        color: #cccccc;
-                        padding: 8px;
-                        vertical-alignment: center;
-                    }
-                }
-            }
-        }
-
-        if root.error != "": Text {
-            text: root.error;
+        if root.error != "" || root.login-error != "": Text {
+            text: root.error != "" ? root.error : root.login-error;
             color: #ff4444;
             font-size: 12px;
             horizontal-alignment: center;
+            wrap: word-wrap;
         }
 
         Button {
-            text: root.is-loading ? "Opening browser..." : "Continue in browser";
+            text: root.is-loading ? "Opening browser..." : "Sign in via browser";
             primary: true;
             enabled: !root.is-loading;
             clicked => {

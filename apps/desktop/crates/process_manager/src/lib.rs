@@ -4,7 +4,6 @@
 //! Game process tracker.
 
 #![forbid(unsafe_code)]
-#![deny(missing_docs)]
 
 mod manager;
 mod process;

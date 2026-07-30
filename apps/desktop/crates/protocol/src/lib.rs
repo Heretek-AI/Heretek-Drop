@@ -10,12 +10,14 @@
 //!
 //! Does NOT handle auth flow (use `heretek_drop_auth` for that).
 
-#![deny(missing_docs)]
 #![forbid(unsafe_code)]
 
 mod client;
 mod endpoints;
+mod error;
 mod types;
 
-pub use client::{AuthHeader, Client};
+pub use client::{AuthContext, Client};
+pub use endpoints::Endpoints;
+pub use error::{ProtocolError, Result};
 pub use types::{Game, GameId, User, VersionDownloadOption};

@@ -5,12 +5,10 @@
 
 use std::time::Duration;
 
-use anyhow::Context;
 use thiserror::Error;
 use tracing::{info, warn};
 
 use heretek_drop_protocol::Client;
-use serde::{Deserialize, Serialize};
 
 use crate::credentials::Credentials;
 
@@ -52,19 +50,6 @@ pub struct AuthState {
     /// Auth code, set after `start_code_flow`.
     pub auth_code: Option<String>,
 }
-
-/// Status response from the long-poll code endpoint.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CodeStatus {
-    /// Whether the auth code is ready.
-    pub ready: bool,
-    /// The auth code (if ready).
-    #[serde(default)]
-    pub code: Option<String>,
-}
-
-/// Default timeout for the browser auth flow.
-pub const DEFAULT_AUTH_TIMEOUT: Duration = Duration::from_secs(300); // 5 minutes
 
 impl AuthFlow {
     /// Construct a new auth flow on the given protocol client.
@@ -109,8 +94,7 @@ impl AuthFlow {
     /// Sign out: clear credentials from disk.
     pub fn sign_out(&self) -> Result<()> {
         warn!("signing out and clearing credentials");
-        crate::credentials::CredentialsStorage::clear()
-            .map_err(|e| AuthError::Other(e.into()))?;
+        crate::credentials::CredentialsStorage::clear().map_err(|e| AuthError::Other(e.into()))?;
         Ok(())
     }
 
@@ -123,49 +107,18 @@ impl AuthFlow {
 }
 
 /// Long-poll for the auth code with timeout.
+///
+/// **Stub for v0.1** — the long-poll endpoint URL wiring and the
+/// `http_get_json` helper were removed when protocol was refactored.
+/// Reimplement in v0.2 using `Client::auth_code_poll(code)` (TODO: add
+/// that method to `heretek_drop_protocol::Client`).
+#[allow(dead_code)]
 pub async fn poll_for_auth_code(
-    client: &Client,
-    code: &str,
-    timeout: Duration,
+    _client: &Client,
+    _code: &str,
+    _timeout: Duration,
 ) -> Result<String> {
-    use tokio::time::timeout as tokio_timeout;
-    let url = heretek_drop_protocol::endpoints::Endpoints::new("https://unused").unwrap(); // placeholder
-    info!(code = %code, "polling for auth code");
-    tokio_timeout(timeout, async {
-        loop {
-            tokio::time::sleep(Duration::from_secs(2)).await;
-            let status: CodeStatus = client
-                .http_get_json(&url)
-                .await
-                .context("poll auth code")
-                .map_err(AuthError::Other)?;
-            if status.ready {
-                if let Some(c) = status.code {
-                    return Ok(c);
-                }
-            }
-        }
-    })
-    .await
-    .map_err(|_| AuthError::Timeout(timeout))?
-}
-
-// Stub trait extension so the auth crate can call the protocol client without
-// depending on its private http field.
-#[async_trait::async_trait]
-trait HttpGetJson {
-    async fn http_get_json<T: serde::de::DeserializeOwned + Send>(
-        &self,
-        url: &url::Url,
-    ) -> anyhow::Result<T>;
-}
-
-#[async_trait::async_trait]
-impl HttpGetJson for Client {
-    async fn http_get_json<T: serde::de::DeserializeOwned + Send>(
-        &self,
-        _url: &url::Url,
-    ) -> anyhow::Result<T> {
-        Err(anyhow::anyhow!("http_get_json: not yet implemented for v0.1"))
-    }
+    Err(AuthError::Other(anyhow::anyhow!(
+        "poll_for_auth_code: not yet implemented for v0.1"
+    )))
 }

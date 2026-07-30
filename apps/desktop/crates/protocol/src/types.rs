@@ -68,3 +68,44 @@ pub struct VersionDownloadOption {
 
 /// Game ID (newtype).
 pub type GameId = u32;
+
+/// Response from `POST /api/v1/client/auth/initiate`.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct InitiateResponse {
+    /// Client ID issued by the server.
+    pub id: String,
+    /// URL to open in the browser for auth.
+    pub redirect_url: String,
+    /// When the auth flow expires (ISO 8601).
+    pub expires_at: String,
+}
+
+/// Response from `POST /api/v1/client/auth/handshake`.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct HandshakeResponse {
+    /// Base64-encoded ES384 private key (PKCS#8 DER).
+    pub private: String,
+    /// Base64-encoded ES384 certificate (X.509 DER).
+    pub certificate: String,
+    /// Client ID issued by the server at handshake.
+    pub id: String,
+}
+
+/// Server healthcheck response.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct HealthResponse {
+    /// Application name (e.g. `Drop`).
+    pub app_name: String,
+    /// Server version.
+    #[serde(default)]
+    pub version: Option<String>,
+}
+
+/// JWT claims for client auth (ES384).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ClientClaims {
+    /// Issued-at timestamp (Unix seconds).
+    pub nbf: u64,
+    /// Expiration timestamp (Unix seconds).
+    pub exp: u64,
+}

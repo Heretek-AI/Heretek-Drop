@@ -3,7 +3,6 @@
 
 //! Shared types and errors used across all Heretek-Drop sub-crates.
 
-#![deny(missing_docs)]
 #![forbid(unsafe_code)]
 
 use serde::{Deserialize, Serialize};

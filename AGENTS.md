@@ -12,22 +12,23 @@ Single Rust binary. Slint declarative UI. Talks to Drop server over REST + JWT. 
 
 See `.omo/plans/drop-native-client-decisions.md` for full provenance.
 
-| Topic | Decision |
-|---|---|
-| License | AGPL-3.0 |
-| Platforms v0.1 | Linux flatpak |
-| Architecture | Slint + Rust (no webview) |
-| Scope | Auth + browse + download + launch |
-| CI | Full matrix on every PR |
-| Repo | Keep Heretek-Drop |
-| Namespace | `app.heretek.drop` |
-| Git hooks | Lefthook |
-| Tauri | NOT USED |
-| Webview | NOT USED |
+| Topic          | Decision                          |
+| -------------- | --------------------------------- |
+| License        | AGPL-3.0                          |
+| Platforms v0.1 | Linux flatpak                     |
+| Architecture   | Slint + Rust (no webview)         |
+| Scope          | Auth + browse + download + launch |
+| CI             | Full matrix on every PR           |
+| Repo           | Keep Heretek-Drop                 |
+| Namespace      | `app.heretek.drop`                |
+| Git hooks      | Husky 9                           |
+| Tauri          | NOT USED                          |
+| Webview        | NOT USED                          |
 
 ## Agent precedence
 
 Project-level `.opencode/` config OVERRIDES user-level `~/.config/opencode/` config. This is the OpenCode default (see OpenCode docs). When a subagent runs, it inherits:
+
 1. Root `AGENTS.md` (this file)
 2. Per-folder `AGENTS.md` (when present)
 3. `.opencode/agents/*.md` subagent definitions
@@ -72,7 +73,7 @@ cd apps/desktop && flatpak-builder build flatpak/app.heretek.drop.yml --user --i
 
 ## AGPL compliance
 
-- All Rust source files MUST include AGPL-3.0 header comment. Enforce via lefthook pre-commit.
+- All Rust source files MUST include AGPL-3.0 header comment. Enforce via Husky pre-commit.
 - `LICENSE` file MUST point to `AGPL-3.0.LICENSE`.
 - `NOTICE` file MUST credit upstream Drop-OSS authors.
 - Static-linking any upstream Rust crate (`droplet`, `libarchive`, `native_model`) RETURNS the entire binary to AGPL-3.0. Default: link upstream crates freely.
