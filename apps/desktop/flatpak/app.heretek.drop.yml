@@ -1,6 +1,6 @@
 app-id: app.heretek.drop
 runtime: org.freedesktop.Platform
-runtime-version: "23.08"
+runtime-version: "24.08"
 sdk: org.freedesktop.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable
@@ -29,9 +29,20 @@ modules:
       env:
         CARGO_HOME: /run/build/heretek-drop/cargo
     build-commands:
-      - cargo build --release --manifest-path=apps/desktop/Cargo.toml
+      # Build binary
+      - cargo build --release --manifest-path=heretek-drop-src/apps/desktop/Cargo.toml
       - install -Dm755 -t /app/bin target/release/heretek-drop
+
+      # Install icons (SVG + PNG multi-size)
+      - install -Dm644 -t /app/share/icons/hicolor/scalable/apps heretek-drop-src/apps/desktop/icons/app.heretek.drop.svg
+      - install -Dm644 -t /app/share/icons/hicolor/32x32/apps heretek-drop-src/apps/desktop/icons/app.heretek.drop-32.png
+      - install -Dm644 -t /app/share/icons/hicolor/48x48/apps heretek-drop-src/apps/desktop/icons/app.heretek.drop-48.png
+      - install -Dm644 -t /app/share/icons/hicolor/64x64/apps heretek-drop-src/apps/desktop/icons/app.heretek.drop-64.png
+      - install -Dm644 -t /app/share/icons/hicolor/128x128/apps heretek-drop-src/apps/desktop/icons/app.heretek.drop-128.png
+      - install -Dm644 -t /app/share/icons/hicolor/256x256/apps heretek-drop-src/apps/desktop/icons/app.heretek.drop-256.png
+      - install -Dm644 -t /app/share/applications heretek-drop-src/apps/desktop/flatpak/app.heretek.drop.desktop
+      - install -Dm644 -t /app/share/mime/packages heretek-drop-src/apps/desktop/flatpak/app.heretek.drop.mimeinfo.xml
     sources:
       - type: dir
-        path: ..
+        path: ../../..
         dest: heretek-drop-src
