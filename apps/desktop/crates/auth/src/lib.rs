@@ -16,6 +16,6 @@ mod credentials;
 mod error;
 mod flow;
 
-pub use credentials::Credentials;
+pub use credentials::{Credentials, CredentialsStorage};
 pub use error::{AuthError, Result};
 pub use flow::AuthFlow;

@@ -12,5 +12,5 @@ mod db;
 mod error;
 
 pub use cache::{Cache, CachedLibrary};
-pub use db::Database;
+pub use db::{default_db_path, Database};
 pub use error::{DbError, Result};

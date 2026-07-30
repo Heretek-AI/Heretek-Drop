@@ -6,7 +6,7 @@
 //! Stored on disk at `~/.config/heretek-drop/credentials.json` with `0600` mode.
 //! Private key is the base64-encoded PKCS#8 DER bytes.
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
@@ -88,6 +88,48 @@ impl CredentialsStorage {
         Ok(())
     }
 
+    /// Load credentials from a specific path.
+    /// Returns `Ok(None)` if no file exists.
+    pub fn load_from(path: &Path) -> Result<Option<Credentials>, CredentialsError> {
+        if !path.exists() {
+            return Ok(None);
+        }
+        let text = std::fs::read_to_string(path)?;
+        let creds: Credentials = serde_json::from_str(&text)?;
+        Ok(Some(creds))
+    }
+
+    /// Save credentials to a specific path with `0600` permissions.
+    pub fn save_to(creds: &Credentials, path: &Path) -> Result<(), CredentialsError> {
+        if let Some(parent) = path.parent() {
+            std::fs::create_dir_all(parent)?;
+        }
+        let json = serde_json::to_string_pretty(creds)?;
+        std::fs::write(path, json)?;
+
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            if let Ok(metadata) = std::fs::metadata(path) {
+                let mut perms = metadata.permissions();
+                perms.set_mode(0o600);
+                if let Err(e) = std::fs::set_permissions(path, perms) {
+                    warn!("failed to set 0600 permissions on credentials file: {e}");
+                }
+            }
+        }
+
+        Ok(())
+    }
+
+    /// Delete credentials from a specific path.
+    pub fn clear_at(path: &Path) -> Result<(), CredentialsError> {
+        if path.exists() {
+            std::fs::remove_file(path)?;
+        }
+        Ok(())
+    }
+
     /// Delete credentials from the default location.
     /// Returns `Ok(())` if the file did not exist.
     pub fn clear() -> Result<(), CredentialsError> {
@@ -110,5 +152,20 @@ impl Credentials {
     /// Save these credentials to the default location.
     pub fn save_to_default_location(&self) -> Result<(), CredentialsError> {
         CredentialsStorage::save(self)
+    }
+
+    /// Load credentials from a specific path.
+    pub fn load_from(path: &Path) -> Result<Option<Self>, CredentialsError> {
+        CredentialsStorage::load_from(path)
+    }
+
+    /// Save these credentials to a specific path.
+    pub fn save_to(&self, path: &Path) -> Result<(), CredentialsError> {
+        CredentialsStorage::save_to(self, path)
+    }
+
+    /// Delete the credentials file at a specific path.
+    pub fn delete(path: &Path) -> Result<(), CredentialsError> {
+        CredentialsStorage::clear_at(path)
     }
 }

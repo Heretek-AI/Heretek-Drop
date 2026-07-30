@@ -18,7 +18,7 @@ heretek-drop-shared = { path = "../shared" }
 
 tokio = { workspace = true, features = ["process", "rt-multi-thread", "macros", "sync"] }
 serde = { workspace = true }
-serde_json = { workspace = true }
+serde_json = { workspace = true, features = ["std"] }
 chrono = { workspace = true }
 tracing = { workspace = true }
 thiserror = { workspace = true }
