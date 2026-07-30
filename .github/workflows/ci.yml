@@ -38,7 +38,9 @@ jobs:
           persist-credentials: false
       - name: Run gitleaks
         uses: docker://zricethezav/gitleaks:v8
-        args: detect --source=. --redact --verbose
+        with:
+          entrypoint: gitleaks
+          args: "detect --source=. --redact --verbose"
 
   # ── Dependency review ─────────────────────────────────────────────
   dependency-review:
