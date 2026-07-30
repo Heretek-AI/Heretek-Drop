@@ -14,6 +14,7 @@
     "format:rs": "cargo fmt --all",
     "clippy": "cargo clippy --workspace --all-targets -- -D warnings",
     "doc:check": "bash .husky/pre-commit.d/doc-check.sh",
+    "docs:sync": "bash docs/generate-crate-table.sh",
     "test": "cargo test --workspace",
     "build": "cargo build --workspace",
     "release": "cargo build --workspace --release",

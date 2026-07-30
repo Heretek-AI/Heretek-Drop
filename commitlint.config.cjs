@@ -35,6 +35,7 @@ module.exports = {
         "ci",
         "agents",
         "skills",
+        "docs",
       ],
     ],
     "subject-case": [2, "always", "lower-case"],
