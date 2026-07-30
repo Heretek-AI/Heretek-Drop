@@ -65,7 +65,8 @@ jobs:
             -not -path './upstream/*' \
             -not -path './.git/*' \
             -not -path './target/*' \
-            | xargs -r shellcheck --severity=warning
+            -not -path './.husky/*' \
+            -exec shellcheck --severity=warning {} +
 
   # ── Hadolint (deferred — no Dockerfile in v0.1) ───────────────────
   # hadolint:

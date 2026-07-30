@@ -30,9 +30,9 @@ jobs:
         id: tag
         run: |
           if [ "${{ github.event_name }}" = "push" ]; then
-            echo "name=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+            echo "name=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
           else
-            echo "name=${{ inputs.tag }}" >> $GITHUB_OUTPUT
+            echo "name=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Install flatpak tools
@@ -84,9 +84,9 @@ jobs:
         id: tag
         run: |
           if [ "${{ github.event_name }}" = "push" ]; then
-            echo "name=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+            echo "name=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
           else
-            echo "name=${{ inputs.tag }}" >> $GITHUB_OUTPUT
+            echo "name=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Download all artifacts
