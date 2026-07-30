@@ -1,0 +1,37 @@
+app-id: app.heretek.drop
+runtime: org.freedesktop.Platform
+runtime-version: "23.08"
+sdk: org.freedesktop.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.rust-stable
+build-options:
+  append-path: /usr/lib/sdk/rust-stable/bin
+  env:
+    CARGO_HOME: /run/build/heretek-drop/cargo
+    RUSTUP_HOME: /usr/lib/sdk/rust-stable
+command: heretek-drop
+finish-args:
+  # Network access
+  - --share=network
+  # X11 + Wayland
+  - --socket=x11
+  - --socket=wayland
+  # File system access (downloads, config)
+  - --filesystem=home
+  # For opening auth URLs in the user's browser
+  - --socket=session-bus
+  # Notifications
+  - --talk-name=org.freedesktop.Notifications
+modules:
+  - name: heretek-drop
+    buildsystem: simple
+    build-options:
+      env:
+        CARGO_HOME: /run/build/heretek-drop/cargo
+    build-commands:
+      - cargo build --release --manifest-path=apps/desktop/Cargo.toml
+      - install -Dm755 -t /app/bin target/release/heretek-drop
+    sources:
+      - type: dir
+        path: ..
+        dest: heretek-drop-src

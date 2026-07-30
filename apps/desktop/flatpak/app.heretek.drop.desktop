@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Heretek-Drop
+GenericName=Game Client
+Comment=Native client for Drop (game distribution platform)
+Exec=heretek-drop %U
+Icon=app.heretek.drop
+Terminal=false
+Categories=Game;Network;
+StartupNotify=true
+StartupWMClass=Heretek-Drop
+MimeType=x-scheme-handler/drop;

@@ -1,0 +1,31 @@
+[package]
+name = "heretek-drop-download-manager"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+description = "Download manager for game files. Chunked downloads with progress events."
+
+[lints]
+workspace = true
+
+[dependencies]
+heretek-drop-protocol = { path = "../protocol" }
+heretek-drop-shared = { path = "../shared" }
+
+reqwest = { workspace = true }
+tokio = { workspace = true }
+tokio-util = { workspace = true }
+futures = "0.3"
+serde = { workspace = true }
+serde_json = { workspace = true }
+sha2 = "0.10"
+chrono = { workspace = true }
+tracing = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+flume = "0.11"

@@ -1,0 +1,78 @@
+// Copyright (C) 2025 Heretek-Drop contributors
+// SPDX-License-Identifier: AGPL-3.0
+
+import { Button } from "std-widgets.slint";
+
+export component LoginPage inherits Rectangle {
+    in-out property <string> username: "";
+    in-out property <string> password: "";
+    in-out property <string> error: "";
+    in-out property <bool> is-loading: false;
+
+    callback login(string, string);
+
+    background: #1e1e1e;
+
+    VerticalLayout {
+        alignment: center;
+        spacing: 16px;
+        padding: 32px;
+
+        Text {
+            text: "Sign in to Drop";
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 600;
+            horizontal-alignment: center;
+        }
+
+        Text {
+            text: "Authenticate via your Drop server. The browser will open for login.";
+            color: #888888;
+            font-size: 13px;
+            horizontal-alignment: center;
+            wrap: word-wrap;
+        }
+
+        Rectangle {
+            width: 360px;
+            height: 80px;
+            VerticalLayout {
+                padding: 8px;
+                spacing: 8px;
+                Text {
+                    text: "Server URL";
+                    color: #aaaaaa;
+                    font-size: 12px;
+                }
+                Rectangle {
+                    height: 32px;
+                    background: #2a2a2a;
+                    border-radius: 4px;
+                    Text {
+                        text: "https://drop.example.com";
+                        color: #cccccc;
+                        padding: 8px;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+        }
+
+        if root.error != "": Text {
+            text: root.error;
+            color: #ff4444;
+            font-size: 12px;
+            horizontal-alignment: center;
+        }
+
+        Button {
+            text: root.is-loading ? "Opening browser..." : "Continue in browser";
+            primary: true;
+            enabled: !root.is-loading;
+            clicked => {
+                root.login(root.username, root.password);
+            }
+        }
+    }
+}

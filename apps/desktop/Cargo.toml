@@ -1,0 +1,50 @@
+[package]
+name = "heretek-drop"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+description = "Native AGPL-3.0 client for Drop (game distribution platform). Slint UI + Tokio."
+
+[[bin]]
+name = "heretek-drop"
+path = "src/main.rs"
+
+[lib]
+name = "heretek_drop"
+path = "src/lib.rs"
+
+[features]
+default = []
+# Build a flatpak container (enables path-less runtime detection, sandboxed paths)
+flatpak = []
+
+[build-dependencies]
+slint-build = "1.13"
+
+[dependencies]
+slint = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+directories = { workspace = true }
+toml = { workspace = true }
+flume = { workspace = true }
+rfd = { workspace = true }
+
+# Sub-crates
+heretek-drop-protocol = { path = "crates/protocol" }
+heretek-drop-auth = { path = "crates/auth" }
+heretek-drop-database = { path = "crates/database" }
+heretek-drop-download-manager = { path = "crates/download_manager" }
+heretek-drop-process-manager = { path = "crates/process_manager" }
+heretek-drop-shared = { path = "crates/shared" }
+
+[lints]
+workspace = true

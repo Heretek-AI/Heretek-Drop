@@ -1,0 +1,88 @@
+// Copyright (C) 2025 Heretek-Drop contributors
+// SPDX-License-Identifier: AGPL-3.0
+
+import { Button } from "std-widgets.slint";
+
+export struct Download {
+    id: int,
+    title: string,
+    progress: float,
+    downloaded-bytes: int,
+    total-bytes: int,
+    state: string,
+}
+
+export component DownloadsPage inherits Rectangle {
+    in-out property <[Download]> downloads: [];
+
+    callback cancel-download(int);
+
+    background: #1e1e1e;
+
+    VerticalLayout {
+        padding: 16px;
+        spacing: 12px;
+
+        Text {
+            text: "Downloads";
+            color: #ffffff;
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        if root.downloads.length == 0: Text {
+            text: "No downloads in progress.";
+            color: #888888;
+            horizontal-alignment: center;
+            vertical-stretch: 1;
+        }
+
+        for download in root.downloads: Rectangle {
+            background: #2a2a2a;
+            border-radius: 4px;
+            height: 80px;
+            VerticalLayout {
+                padding: 12px;
+                spacing: 6px;
+                HorizontalLayout {
+                    Text {
+                        text: download.title;
+                        color: #ffffff;
+                        font-size: 14px;
+                        font-weight: 600;
+                        vertical-alignment: center;
+                        horizontal-stretch: 1;
+                        overflow: elide;
+                    }
+                    Text {
+                        text: download.state;
+                        color: #888888;
+                        font-size: 12px;
+                    }
+                }
+                Rectangle {
+                    height: 6px;
+                    background: #1a1a1a;
+                    border-radius: 3px;
+                    Rectangle {
+                        width: parent.width * download.progress;
+                        height: 6px;
+                        background: #00ff88;
+                        border-radius: 3px;
+                    }
+                }
+                HorizontalLayout {
+                    Text {
+                        text: download.downloaded-bytes / 1048576 + " MB / " + download.total-bytes / 1048576 + " MB";
+                        color: #888888;
+                        font-size: 11px;
+                    }
+                    Button {
+                        text: "Cancel";
+                        clicked => { root.cancel-download(download.id); }
+                    }
+                }
+            }
+        }
+    }
+}

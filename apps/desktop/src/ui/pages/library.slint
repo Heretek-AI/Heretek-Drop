@@ -1,0 +1,115 @@
+// Copyright (C) 2025 Heretek-Drop contributors
+// SPDX-License-Identifier: AGPL-3.0
+
+import { Button } from "std-widgets.slint";
+
+export struct Game {
+    id: int,
+    title: string,
+    developer: string,
+    cover-image: image,
+}
+
+export component LibraryPage inherits Rectangle {
+    in-out property <[Game]> games: [];
+    in-out property <string> search-query: "";
+    in-out property <bool> is-loading: false;
+
+    callback download-game(int);
+
+    background: #1e1e1e;
+
+    VerticalLayout {
+        padding: 16px;
+        spacing: 16px;
+
+        HorizontalLayout {
+            spacing: 12px;
+            Text {
+                text: "My Library";
+                color: #ffffff;
+                font-size: 22px;
+                font-weight: 600;
+                vertical-alignment: center;
+            }
+            Rectangle {
+                horizontal-stretch: 1;
+                height: 32px;
+                background: #2a2a2a;
+                border-radius: 4px;
+                Text {
+                    text: root.search-query == "" ? "Search games..." : root.search-query;
+                    color: root.search-query == "" ? #666666 : #ffffff;
+                    padding: 8px;
+                    vertical-alignment: center;
+                }
+            }
+        }
+
+        if root.is-loading: Text {
+            text: "Loading...";
+            color: #888888;
+            horizontal-alignment: center;
+        }
+
+        if !root.is-loading && root.games.length == 0: VerticalLayout {
+            alignment: center;
+            spacing: 12px;
+            Text {
+                text: "No games in your library yet.";
+                color: #888888;
+                horizontal-alignment: center;
+            }
+            Text {
+                text: "Browse the store to add games to your library.";
+                color: #666666;
+                font-size: 12px;
+                horizontal-alignment: center;
+            }
+        }
+
+        // Use a fixed-height grid for v0.1. >100 items needs virtualization.
+        GridLayout {
+            spacing: 16px;
+            padding: 8px;
+            Row {
+                for game in root.games: VerticalLayout {
+                    spacing: 8px;
+                    Rectangle {
+                        background: #2a2a2a;
+                        border-radius: 4px;
+                        width: 160px;
+                        height: 220px;
+                        if game.cover-image.width > 0: Image {
+                            source: game.cover-image;
+                            width: 160px;
+                            height: 220px;
+                            image-fit: cover;
+                        }
+                    }
+                    Text {
+                        text: game.title;
+                        color: #ffffff;
+                        font-size: 13px;
+                        horizontal-alignment: center;
+                        width: 160px;
+                        overflow: elide;
+                    }
+                    Text {
+                        text: game.developer;
+                        color: #888888;
+                        font-size: 11px;
+                        horizontal-alignment: center;
+                        width: 160px;
+                        overflow: elide;
+                    }
+                    Button {
+                        text: "Download";
+                        width: 160px;
+                        clicked => { root.download-game(game.id); }
+                    }
+                }
+            }
+        }
+    }
+}

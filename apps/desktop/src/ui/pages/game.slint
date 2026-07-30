@@ -1,0 +1,74 @@
+// Copyright (C) 2025 Heretek-Drop contributors
+// SPDX-License-Identifier: AGPL-3.0
+
+import { Button } from "std-widgets.slint";
+
+export component GamePage inherits Rectangle {
+    in-out property <string> title: "";
+    in-out property <string> description: "";
+    in-out property <string> developer: "";
+    in-out property <image> cover-image;
+    in-out property <[string]> screenshots: [];
+    in-out property <string> selected-version: "";
+    in-out property <string> available-versions: "";
+
+    callback download-game(int);
+
+    background: #1e1e1e;
+
+    ScrollView {
+        VerticalLayout {
+            padding: 24px;
+            spacing: 16px;
+
+            HorizontalLayout {
+                spacing: 24px;
+                Rectangle {
+                    width: 240px;
+                    height: 320px;
+                    background: #2a2a2a;
+                    border-radius: 4px;
+                    if root.cover-image.width > 0: Image {
+                        source: root.cover-image;
+                        width: 240px;
+                        height: 320px;
+                        image-fit: cover;
+                    }
+                }
+                VerticalLayout {
+                    spacing: 8px;
+                    Text {
+                        text: root.title;
+                        color: #ffffff;
+                        font-size: 28px;
+                        font-weight: 700;
+                    }
+                    Text {
+                        text: "By " + root.developer;
+                        color: #888888;
+                        font-size: 14px;
+                    }
+                    Text {
+                        text: root.description;
+                        color: #cccccc;
+                        font-size: 14px;
+                        wrap: word-wrap;
+                        vertical-stretch: 1;
+                    }
+                }
+            }
+
+            Text {
+                text: "Version: " + (root.selected-version == "" ? "Latest" : root.selected-version);
+                color: #aaaaaa;
+                font-size: 13px;
+            }
+
+            Button {
+                text: "Download";
+                primary: true;
+                clicked => { root.download-game(0); }
+            }
+        }
+    }
+}

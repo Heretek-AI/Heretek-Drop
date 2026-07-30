@@ -1,0 +1,114 @@
+// Copyright (C) 2025 Heretek-Drop contributors
+// SPDX-License-Identifier: AGPL-3.0
+
+// Slint UI for Heretek-Drop.
+//
+// Entry point: AppWindow. Holds the current page (login / library /
+// game / downloads / settings) and swaps via the `current-page` property.
+
+import { Button } from "std-widgets.slint";
+import { LoginPage } from "pages/login.slint";
+import { LibraryPage } from "pages/library.slint";
+import { GamePage } from "pages/game.slint";
+import { DownloadsPage } from "pages/downloads.slint";
+import { SettingsPage } from "pages/settings.slint";
+
+export enum Page {
+    Login,
+    Library,
+    Game,
+    Downloads,
+    Settings,
+}
+
+export component MainWindow inherits Window {
+    title: "Heretek-Drop";
+    min-width: 800px;
+    min-height: 600px;
+    preferred-width: 1280px;
+    preferred-height: 800px;
+    background: #1e1e1e;
+
+    in-out property <string> app-name: "Heretek-Drop";
+    in-out property <string> username: "";
+    in-out property <bool> is-logged-in: false;
+    in-out property <Page> current-page: Page.Login;
+
+    // Callback stubs — wired in Rust.
+    callback login(string, string);
+    callback navigate-to(Page);
+    callback download-game(int);
+    callback cancel-download(int);
+    callback launch-game(int);
+
+    VerticalLayout {
+        // Top nav bar
+        Rectangle {
+            height: 48px;
+            background: #2a2a2a;
+            HorizontalLayout {
+                padding: 12px;
+                spacing: 12px;
+                alignment: start;
+
+                Text {
+                    text: root.app-name;
+                    color: #00ff88;
+                    font-size: 18px;
+                    font-weight: 700;
+                }
+
+                if root.is-logged-in: HorizontalLayout {
+                    spacing: 8px;
+                    Button {
+                        text: "Library";
+                        clicked => { root.navigate-to(Page.Library); }
+                    }
+                    Button {
+                        text: "Downloads";
+                        clicked => { root.navigate-to(Page.Downloads); }
+                    }
+                    Button {
+                        text: "Settings";
+                        clicked => { root.navigate-to(Page.Settings); }
+                    }
+                }
+            }
+        }
+
+        // Page area
+        Rectangle {
+            vertical-stretch: 1;
+            background: #1e1e1e;
+
+            if root.current-page == Page.Login: LoginPage {
+                login(username, password) => { root.login(username, password); }
+            }
+            if root.current-page == Page.Library && root.is-logged-in: LibraryPage {
+                download-game(id) => { root.download-game(id); }
+            }
+            if root.current-page == Page.Game && root.is-logged-in: GamePage {
+                download-game(id) => { root.download-game(id); }
+            }
+            if root.current-page == Page.Downloads && root.is-logged-in: DownloadsPage {
+                cancel-download(id) => { root.cancel-download(id); }
+            }
+            if root.current-page == Page.Settings && root.is-logged-in: SettingsPage {
+            }
+        }
+
+        // Status bar
+        Rectangle {
+            height: 24px;
+            background: #2a2a2a;
+            HorizontalLayout {
+                padding: 6px;
+                Text {
+                    text: root.is-logged-in ? "Logged in as " + root.username : "Not logged in";
+                    color: #888888;
+                    font-size: 12px;
+                }
+            }
+        }
+    }
+}
