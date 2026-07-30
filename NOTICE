@@ -25,10 +25,11 @@ Files in apps/desktop/ referencing upstream API contracts:
 
 ========================================================================
 BillyOutlast/drop/pull/200 — test + CI + static-analysis infrastructure
-Merged at BillyOutlast/drop@fcefefb7. Patterns ported to lefthook:
+Merged at BillyOutlast/drop@fcefefb7. Hook patterns ported and adapted to Husky 9:
 
-  - .husky/pre-commit: ported from .husky/pre-commit
-  - .husky/commit-msg: ported from .husky/commit-msg
+  - .husky/pre-commit: ported from BillyOutlast's .husky/pre-commit
+  - .husky/commit-msg: ported from BillyOutlast's .husky/commit-msg
+  - .husky/pre-push: added (cargo test --workspace), not in upstream
 
 ========================================================================
 This binary statically links the following AGPL-3.0 code:
