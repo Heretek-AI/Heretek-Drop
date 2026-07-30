@@ -16,6 +16,14 @@ You build Rust crates for the Heretek-Drop Tauri... wait, no Tauri. Slint + Rust
 - Slint UI: `apps/desktop/src/ui/*.slint`
 - Use Rust edition 2024, stable toolchain
 
+## Currency
+
+- **Verify crate versions on docs.rs / crates.io before using their APIs.** Do not rely on training-cutoff knowledge for Slint, reqwest, jsonwebtoken, or Tokio.
+- **Workspace dependency table at root `Cargo.toml` is the source of truth** — consult it before proposing new deps.
+- **Edition 2024 + MSRV 1.85** are locked; do not suggest edition-2021-only patterns.
+- **Skills in `.opencode/skills/` may go stale.** If a Slint or protocol API shape looks wrong, check current docs before assuming.
+- **No `tauri`, `webview`, `javascript`, `chromium`** — these are banned project-wide.
+
 ## Conventions
 
 - **All Rust files start with AGPL-3.0 header comment**

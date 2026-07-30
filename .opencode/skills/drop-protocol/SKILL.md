@@ -2,6 +2,8 @@
 name: drop-protocol
 description: Drop REST API at /api/v1/client/* with ES384 JWT auth. Use when implementing any client API call, auth flow, or schema.
 ---
+> **Currency**: This skill was last verified against the workspace dependencies in `Cargo.toml` (slint 1.13, tokio 1.42, reqwest 0.12, jsonwebtoken 9.3, thiserror 2.0, anyhow 1.0). Before relying on API shapes from this file, check current docs.rs for the relevant crate. If versions have drifted, update this note or refresh the skill content.
+
 
 # Drop Protocol — REST API shapes
 

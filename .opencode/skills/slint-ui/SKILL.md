@@ -2,6 +2,8 @@
 name: slint-ui
 description: Slint declarative UI markup syntax, callbacks, component composition. Use when writing .slint files.
 ---
+> **Currency**: This skill was last verified against the workspace dependencies in `Cargo.toml` (slint 1.13, tokio 1.42, reqwest 0.12, jsonwebtoken 9.3, thiserror 2.0, anyhow 1.0). Before relying on API shapes from this file, check current docs.rs for the relevant crate. If versions have drifted, update this note or refresh the skill content.
+
 
 # Slint UI — markup patterns
 
